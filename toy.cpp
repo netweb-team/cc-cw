@@ -30,6 +30,7 @@
 #include <system_error>
 #include <utility>
 #include <vector>
+#include <unistd.h>
 
 using namespace std;
 using namespace llvm;
@@ -1344,5 +1345,6 @@ int main()
 
     outs() << "Wrote " << Filename << "\n";
 
+    execl("/bin/g++", "/bin/g++", "test.cpp", Filename, "-o", "main", NULL);
     return 0;
 }
