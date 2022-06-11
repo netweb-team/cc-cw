@@ -148,7 +148,7 @@ ASSIGN: '=';
 COLON: ':';
 DOT_DOT: '..';
 CARET: '^';
-COLON_ASSING: ':=';
+COLON_ASSIGN: ':=';
 GRATER: '>';
 LESS: '<';
 GRATER_EQUAL: '>=';
@@ -161,6 +161,7 @@ DIV_: '/';
 DOG: '@';
 SHARP: '#';
 LESS_DIV: '</';
+
 
 fragment NONDIGIT: [a-zA-Z_];
 
