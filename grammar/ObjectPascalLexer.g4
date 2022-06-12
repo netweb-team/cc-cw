@@ -20,7 +20,7 @@ OF: 'of';
 REAL: 'real';
 SINGLE:'single';
 DOUBLE: 'double';
-EXRENDED: 'extended';
+EXTENDED: 'extended';
 CURRENCY: 'currency';
 COMP: 'comp';
 SHORTINT: 'shortint';
@@ -68,8 +68,9 @@ IMPLEMENTS: 'implements';
 VAR_1: 'var';
 VAR_2: 'Var';
 ABSOLUTE: 'absolute';
+ABSTRACT: 'absctuct';
 FUNCTION_1: 'function';
-FUNCTION_2: 'Funcrion';
+FUNCTION_2: 'Function';
 PROCEDURE_1: 'procedure';
 PROCEDURE_2: 'Procedure';
 OUT: 'out';
@@ -93,7 +94,7 @@ DO_2: 'Do';
 DO_3: 'DO';
 WITH: 'with';
 TRY: 'try';
-FINNALY: 'finnaly';
+FINALLY: 'finally';
 EXCEPT_1: 'except';
 EXCEPT_2: 'Except';
 ON: 'on';
@@ -133,9 +134,12 @@ OVERRIDE_1: 'override';
 OVERRIDE_2: 'Override';
 OVERLOAD: 'overload';
 PASCAL: 'pascal';
-REINTRODUCE: 'reinrtoduce';
+REINTRODUCE: 'reintroduce';
 SAFECALL: 'safecall';
 STDCALL: 'stdcall';
+VARARGS: 'varargs';
+LOCAL: 'local';
+REAL48: 'real48';
 
 SEMI: ';';
 DOT: '.';
@@ -161,7 +165,15 @@ DIV_: '/';
 DOG: '@';
 SHARP: '#';
 LESS_DIV: '</';
-
+NEAR: 'near';
+INLINE: 'inline';
+ASSEMBLER: 'assembler';
+PLATFORM: 'platform';
+DEPRECATED: 'deprecated';
+CARDINAL: 'cardinal';
+INT64: 'int64';
+LONGWORD: 'longword';
+UNICODESTRING: 'unicodestring';
 
 fragment NONDIGIT: [a-zA-Z_];
 
@@ -174,3 +186,127 @@ fragment OCTALDIGIT: [0-7];
 fragment HEXADECIMALDIGIT: [0-9a-fA-F];
 
 fragment BINARYDIGIT: [01];
+
+Ident:
+     NONDIGIT (NONDIGIT | DIGIT)*;
+
+DecimalLiteral: NONZERODIGIT ('\''? DIGIT)*;
+
+OctalLiteral: '0' ('\''? OCTALDIGIT)*;
+
+HexadecimalLiteral: ('0x' | '0X') HEXADECIMALDIGIT (
+		'\''? HEXADECIMALDIGIT
+	)*;
+
+BinaryLiteral: ('0b' | '0B') BINARYDIGIT ('\''? BINARYDIGIT)*;
+
+Integersuffix:
+	Unsignedsuffix Longsuffix?
+	| Unsignedsuffix Longlongsuffix?
+	| Longsuffix Unsignedsuffix?
+	| Longlongsuffix Unsignedsuffix?;
+
+fragment Unsignedsuffix: [uU];
+
+fragment Longsuffix: [lL];
+
+fragment Longlongsuffix: 'll' | 'LL';
+
+fragment Cchar:
+	~ ['\\\r\n]
+	| Escapesequence;
+
+fragment Escapesequence:
+	Simpleescapesequence
+	| Octalescapesequence
+	| Hexadecimalescapesequence;
+fragment Simpleescapesequence:
+	'\\\''
+	| '\\"'
+	| '\\?'
+	| '\\\\'
+	| '\\a'
+	| '\\b'
+	| '\\f'
+	| '\\n'
+	| '\\r'
+	| ('\\' ('\r' '\n'? | '\n'))
+	| '\\t'
+	| '\\v';
+
+fragment Octalescapesequence:
+	'\\' OCTALDIGIT
+	| '\\' OCTALDIGIT OCTALDIGIT
+	| '\\' OCTALDIGIT OCTALDIGIT OCTALDIGIT;
+
+fragment Hexadecimalescapesequence: '\\x' HEXADECIMALDIGIT+;
+
+fragment Fractionalconstant:
+	Digitsequence? '.' Digitsequence
+	| Digitsequence '.';
+
+fragment Exponentpart:
+	'e' SIGN? Digitsequence
+	| 'E' SIGN? Digitsequence;
+
+fragment SIGN: [+-];
+
+fragment Digitsequence: DIGIT ('\''? DIGIT)*;
+
+fragment Floatingsuffix: [flFL];
+
+fragment Encodingprefix: 'u8' | 'u' | 'U' | 'L';
+
+fragment Schar:
+	~ ["\\\r\n]
+	| Escapesequence;
+
+fragment Rawstring: 'R"' (( '\\' ["()] )|~[\r\n (])*? '(' ~[)]*? ')'  (( '\\' ["()]) | ~[\r\n "])*? '"';
+UserDefinedIntegerLiteral:
+	DecimalLiteral Udsuffix
+	| OctalLiteral Udsuffix
+	| HexadecimalLiteral Udsuffix
+	| BinaryLiteral Udsuffix;
+UserDefinedFloatingLiteral:
+	Fractionalconstant Exponentpart? Udsuffix
+	| Digitsequence Exponentpart Udsuffix;
+UserDefinedStringLiteral: StringLiteral Udsuffix;
+UserDefinedCharacterLiteral: CharacterLiteral Udsuffix;
+
+fragment Udsuffix: Ident;
+
+Whitespace: [ \t]+ -> skip;
+Newline: ('\r' '\n'? | '\n') -> skip;
+BlockComment: '/*' .*? '*/' -> skip;
+LineComment: '//' ~ [\r\n]* -> skip;
+
+
+IntegerLiteral:
+	DecimalLiteral Integersuffix?
+	| OctalLiteral Integersuffix?
+	| HexadecimalLiteral Integersuffix?
+	| BinaryLiteral Integersuffix?;
+
+CharacterLiteral:
+	('u' | 'U' | 'L')? '\'' Cchar+ '\'';
+
+FloatingLiteral:
+	Fractionalconstant Exponentpart? Floatingsuffix?
+	| Digitsequence Exponentpart Floatingsuffix?;
+
+StringLiteral:
+	Encodingprefix?
+    (Rawstring
+	|'"' Schar* '"');
+
+BooleanLiteral: FALSE_1 | FALSE_2 | TRUE_1 | TRUE_2;
+
+
+UserDefinedLiteral:
+	UserDefinedIntegerLiteral
+	| UserDefinedFloatingLiteral
+	| UserDefinedStringLiteral
+	| UserDefinedCharacterLiteral;
+
+MultiLineMacro:
+	'#' (~[\n]*? '\\' '\r'? '\n')+ ~ [\n]+ -> channel (HIDDEN);
