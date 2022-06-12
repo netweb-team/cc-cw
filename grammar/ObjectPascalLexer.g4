@@ -174,8 +174,12 @@ CARDINAL: 'cardinal';
 INT64: 'int64';
 LONGWORD: 'longword';
 UNICODESTRING: 'unicodestring';
+QUOTE: '"';
+E: 'E';
 
 fragment NONDIGIT: [a-zA-Z_];
+fragment UPPERCASE: [A-Z];
+fragment LOWERCASE: [a-z];
 
 fragment DIGIT: [0-9];
 
@@ -310,3 +314,21 @@ UserDefinedLiteral:
 
 MultiLineMacro:
 	'#' (~[\n]*? '\\' '\r'? '\n')+ ~ [\n]+ -> channel (HIDDEN);
+
+
+ARRAY: ARRAY_1 | ARRAY_2;
+VAR: VAR_1 | VAR_2;
+NOT: NOT_1 | NOT_2 | NOT_3;
+DIV: DIV_BIG | DIV_LITTLE;
+AND: AND_BIG | AND_LITTLE;
+AS: AS_1 | AS_2;
+IF: IF_1 | IF_2;
+DO: DO_1 | DO_2 | DO_3;
+FOR: FOR_1 | FOR_2;
+EXCEPT: EXCEPT_1 | EXCEPT_2;
+FUNCTION: FUNCTION_1 | FUNCTION_2;
+PROCEDURE: PROCEDURE_1 | PROCEDURE_2;
+OVERRIDE: OVERRIDE_1 | OVERRIDE_2;
+BEGIN: BEGIN_1 | BEGIN_2;
+
+PROTECTED:  PROTECTED_1 | PROTECTED_2;

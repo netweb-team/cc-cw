@@ -3,36 +3,35 @@ options {
 	tokenVocab = ObjectPascalLexer;
 }
 
+goal: program | package | library | unit;
+program: PROGRAM Ident (LEFT_PAREN identList RIGHT_PAREN)? SEMI 
+        programBlock DOT;
 
-Goal: Program | Package | Library | Unit;
-Program: PROGRAM Ident (LEFT_PAREN IdentList RIGHT_PAREN)? SEMI 
-        ProgramBlock DOT;
+unit: UNIT qualId (portabilityDirective)? SEMI interfaceSection implementationSection initSection DOT;
 
-Unit: UNIT QualId (PortabilityDirective)? SEMI InterfaceSection ImplementationSection InitSection DOT;
+package: PACKAGE Ident SEMI requiresClause? containsClause? END DOT;
 
-Package: PACKAGE Ident SEMI RequiresClause? ContainsClause? END DOT;
+library: LIBRARY Ident SEMI  programBlock DOT;
 
-Library: LIBRARY Ident SEMI  ProgramBlock DOT;
+programBlock: usesClause? declSection*  compoundStmt;
 
-ProgramBlock: UsesClause? DeclSection*  CompoundStmt;
+usesClause: USES qualIdList SEMI;
 
-UsesClause: USES QualIdList SEMI;
+portabilityDirective: PLATFORM | DEPRECATED | LIBRARY; //хз
 
-PortabilityDirective: PLATFORM | DEPRECATED | LIBRARY; //хз
+interfaceSection: INTERFACE
+                    usesClause?
+                    interfaceDecl*;
 
-InterfaceSection: INTERFACE
-                    UsesClause?
-                    InterfaceDecl*;
+interfaceDecl:  constSection | typeSection | varSection | exportedHeading; //хз
 
-InterfaceDecl:  ConstSection | TypeSection | VarSection | ExportedHeading; //хз
+exportedHeading: (procedureHeading SEMI directive?) | (functionHeading SEMI directive?);
 
-ExportedHeading: (ProcedureHeading SEMI [Directive]) | (FunctionHeading ';' [Directive]);
+implementationSection: IMPLEMENTATION
+                        usesClause?
+                        declSection*;
 
-ImplementationSection: IMPLEMENTATION
-                         UsesClause?
-                        DeclSection*;
-
-Block: DeclSection?  CompoundStmt;
+block: declSection?  compoundStmt;
 
 
 // ExportsStmt: EXPORT ExportsItem (COMMA ExportsItem)*;
@@ -40,237 +39,218 @@ Block: DeclSection?  CompoundStmt;
 // ExportsItem: Ident (NAME|INDEX "'" ConstExpr "'")?
                 //      (INDEX|NAME "'" ConstExpr "'")?;
 
-DeclSection: LabelDeclSection | ConstSection | TypeSection | VarSection |  ProcedureDeclSection;
+declSection: labelDeclSection | constSection | typeSection | varSection |  procedureDeclSection;
 
-LabelDeclSection: LABEL LabelId;
+labelDeclSection: LABEL labelId;
 
-ConstSection: CONST (ConstantDecl SEMI)*;
+constSection: CONST (constantDecl SEMI)*;
 
-ConstantDecl: (Ident ASSIGN ConstExpr [PortabilityDirective] ) | ( Ident COLON TypeId ASSIGN TypedConstant [PortabilityDirective]);
+constantDecl: (Ident ASSIGN constExpr portabilityDirective? ) | ( Ident COLON typeId ASSIGN typedConstant portabilityDirective?);
 
-TypeSection: TYPE_ (TypeDecl SEMI)+;  
+typeSection: TYPE_ (typeDecl SEMI)+;  
 
-TypeDecl: ( Ident ASSIGN TYPE_? Type PortabilityDirective?) | ( Ident ASSIGN TYPE_? RestrictedType PortabilityDirective?);
+typeDecl: ( Ident ASSIGN TYPE_? type portabilityDirective?) | ( Ident ASSIGN TYPE_? restrictedType portabilityDirective?);
 
-TypedConstant: (ConstExpr | ArrayConstant | RecordConstant);
+typedConstant: (constExpr | arrayConstant | recordConstant);
 
-ArrayConstant: LEFT_PAREN TypedConstant ( COMMA TypedConstant )* RIGHT_PAREN;
+arrayConstant: LEFT_PAREN typedConstant ( COMMA typedConstant )* RIGHT_PAREN;
 
-RecordConstant:  LEFT_PAREN (RecordFieldConstant SEMI)* RIGHT_PAREN; 
+recordConstant:  LEFT_PAREN (recordFieldConstant SEMI)* RIGHT_PAREN; 
 
-RecordFieldConstant: Ident COLON TypedConstant;
-Type:  TypeId |  SimpleType |  StrucType | PointerType | StringType | ProcedureType | VariantType | ClassRefType;
+recordFieldConstant: Ident COLON typedConstant;
+type:  typeId |  simpleType |  strucType | pointerType | stringType | procedureType | variantType | classRefType;
 
-RestrictedType:  ObjectType | ClassType | InterfaceType;
+restrictedType:  objectType | classType | interfaceType;
 
-ClassRefType: CLASS OF TypeId; 
+classRefType: CLASS OF typeId; 
 
-SimpleType: (OrdinalType | RealType);
-RealType: REAL48 | REAL | SINGLE | DOUBLE | EXTENDED | CURRENCY | COMP;
+simpleType: (ordinalType | realType);
+realType: REAL48 | REAL | SINGLE | DOUBLE | EXTENDED | CURRENCY | COMP;
 
-OrdinalType: (SubrangeType | EnumeratedType | OrdIdent);
-OrdIdent: SHORTINT | SMALLINT | INTEGER | BYTE| CARDINAL | LONGINT | INT64 | WORD | BOOLEAN | CHAR | WIDECHAR | LONGWORD | PCHAR;
+ordinalType: (subrangeType | enumeratedType | ordIdent);
+ordIdent: SHORTINT | SMALLINT | INTEGER | BYTE| CARDINAL | LONGINT | INT64 | WORD | BOOLEAN | CHAR | WIDECHAR | LONGWORD | PCHAR;
 
-VariantType: VARIANT | OLEVARIANT;
+variantType: VARIANT | OLEVARIANT;
 
-SubrangeType: ConstExpr DOT_DOT ConstExpr;
+subrangeType: constExpr DOT_DOT constExpr;
 
-EnumeratedType: LEFT_PAREN EnumeratedTypeElement (',' EnumeratedTypeElement)* RIGHT_PAREN;
-EnumeratedTypeElement: Ident ( '=' ConstExpr )?;
-StringType: STRING | ANSISTRING | WIDESTRING | UNICODESTRING | (STRING LEFT_BRACKET  ConstExpr RIGHT_BRACKET );
+enumeratedType: LEFT_PAREN enumeratedTypeElement (COMMA enumeratedTypeElement)* RIGHT_PAREN;
+enumeratedTypeElement: Ident ( '=' constExpr )?;
+stringType: STRING | ANSISTRING | WIDESTRING | UNICODESTRING | (STRING LEFT_BRACKET  constExpr RIGHT_BRACKET );
 
-StrucType:  PACKED? (ArrayType | SetType | FileType | RecType PACKED?);
+strucType:  PACKED? (arrayType | setType | fileType | recType PACKED?);
 
-ARRAY: ARRAY_1 | ARRAY_2;
-ArrayType: ARRAY (LEFT_BRACKET OrdinalType ( ',' OrdinalType)* RIGHT_BRACKET)? OF Type PortabilityDirective?;
+arrayType: ARRAY (LEFT_BRACKET ordinalType (COMMA ordinalType)* RIGHT_BRACKET)? OF type portabilityDirective?;
 
-RecType: RECORD FieldList? END PortabilityDirective?;
+recType: RECORD fieldList? END portabilityDirective?;
 
-FieldList: (FieldDecl SEMI)+ VariantSection? SEMI?;
+fieldList: (fieldDecl SEMI)+ variantSection? SEMI?;
 
-FieldDecl: IdentList COLON Type PortabilityDirective?;
+fieldDecl: identList COLON type portabilityDirective?;
 
-VariantSection: CASE (Ident COLON)? TypeId OF RecVariant (SEMI RecVariant )*;
+variantSection: CASE (Ident COLON)? typeId OF recVariant (SEMI recVariant )*;
 
-RecVariant: ConstExpr (COMMA ConstExpr)* COLON LEFT_PAREN FieldList? RIGHT_PAREN;
+recVariant: constExpr (COMMA constExpr)* COLON LEFT_PAREN fieldList? RIGHT_PAREN;
 
-SetType: SET OF OrdinalType PortabilityDirective?;
+setType: SET OF ordinalType portabilityDirective?;
 
-FileType: FILE OF TypeId PortabilityDirective?;
+fileType: FILE OF typeId portabilityDirective?;
 
-PointerType: CARET TypeId PortabilityDirective?;
+pointerType: CARET typeId portabilityDirective?;
 
-ProcedureType: (ProcedureHeading | FunctionHeading) (OF OBJECT)?;
-VAR: VAR_1 | VAR_2;
-VarSection: VAR VarDecl (SEMI VarDecl)*;
+procedureType: (procedureHeading | functionHeading) (OF OBJECT)?;
 
-VarDecl: IdentList COLON Type [(ABSOLUTE (Ident | ConstExpr)) | '=' ConstExpr] [PortabilityDirective];
+varSection: VAR varDecl (SEMI varDecl)*;
+
+varDecl: identList COLON type ((ABSOLUTE (Ident | constExpr)) | ASSIGN constExpr)? portabilityDirective?;
       
-Expression: SimpleGrouped (RelOp SimpleGrouped)*;
-SimpleGrouped: SimpleExpression | LEFT_PAREN SimpleExpression RIGHT_PAREN; 
-SimpleExpression: ('+' | '-')? Term (AddOp Term)*;
+expression: simpleGrouped (relOp simpleGrouped)*;
+simpleGrouped: simpleExpression | LEFT_PAREN simpleExpression RIGHT_PAREN; 
+simpleExpression: (PLUS | MINUS)? term (addOp term)*;
 
-Term: Factor (MulOp Factor)*;
+term: factor (mulOp factor)*;
 
-NOT: NOT_1 | NOT_2 | NOT_3;
-DIV: DIV_BIG | DIV_LITTLE;
-AND: AND_BIG | AND_LITTLE;
-AS: AS_1 | AS_2;
-Factor: Designator (LEFT_PAREN ExprList RIGHT_PAREN)? 
-|  (DOG Designator) 
-| Number 
-| String 
+
+factor: designator (LEFT_PAREN exprList RIGHT_PAREN)? 
+|  (DOG designator) 
+| number 
+| string 
 //| OneChar 
 | NIL 
-| (LEFT_PAREN Expression RIGHT_PAREN) 
-| (NOT Factor) 
-| SetConstructor 
-| (TypeId LEFT_PAREN Expression RIGHT_PAREN);
-RelOp: GRATER | LESS | LESS_EQUAL | GRATER_EQUAL | NOT_EQUAL | IN | IS | AS;
-AddOp: PLUS | MINUS | OR | XOR;
-MulOp: STAR | DIV_ | DIV | MOD | AND | SHL | SHR;
-AdditiveOp: PLUS | MINUS | STAR;
-Designator: QualId (DOT Ident | LEFT_BRACKET ExprList RIGHT_BRACKET | CARET)*;
-SetConstructor: LEFT_BRACKET SetElement (',' SetElement  )* RIGHT_BRACKET;
-SetElement: Expression (DOT_DOT Expression)?;
-ExprList: Expression (COMMA Expression)*; 
-Statement: (LabelId COLON)? (SimpleStatement | StructStmt)?; 
-StmtList: Statement (SEMI Statement )*;
-SimpleStatement:      AssignmentStmt  |INHERITED | ( GOTO LabelId); //| ProcedureCall ;
-StructStmt: CompoundStmt | ConditionalStmt | LoopStmt | WithStmt | TryExceptStmt | TryFinallyStmt | RaiseStmt; // | AssemblerStmt;
-CompoundStmt: BEGIN StmtList SEMI? END;
-ConditionalStmt: IfStmt | CaseStmt;
+| (LEFT_PAREN expression RIGHT_PAREN) 
+| (NOT factor) 
+| setConstructor 
+| (typeId LEFT_PAREN expression RIGHT_PAREN);
+relOp: GRATER | LESS | LESS_EQUAL | GRATER_EQUAL | NOT_EQUAL | IN | IS | AS;
+addOp: PLUS | MINUS | OR | XOR;
+mulOp: STAR | DIV_ | DIV | MOD | AND | SHL | SHR;
+additiveOp: PLUS | MINUS | STAR;
+designator: qualId (DOT Ident | LEFT_BRACKET exprList RIGHT_BRACKET | CARET)*;
+setConstructor: LEFT_BRACKET setElement (COMMA setElement)* RIGHT_BRACKET;
+setElement: expression (DOT_DOT expression)?;
+exprList: expression (COMMA expression)*; 
+statement: (labelId COLON)? (simpleStatement | structStmt)?; 
+stmtList: statement (SEMI statement )*;
+simpleStatement:      assignmentStmt  |INHERITED | ( GOTO labelId); //| ProcedureCall ;
+structStmt: compoundStmt | conditionalStmt | loopStmt | withStmt | tryExceptStmt | tryFinallyStmt | raiseStmt; // | AssemblerStmt;
+compoundStmt: BEGIN stmtList SEMI? END;
+conditionalStmt: ifStmt | caseStmt;
 //ProcedureCall: QualId (LEFT_PAREN (ExprList)? RIGHT_PAREN)?;
-AssignmentStmt: Designator COLON_ASSIGN Expression;
-IF: IF_1 | IF_2;
-IfStmt: IF Expression THEN Statement (ELSE Statement)?;
-CaseStmt: CASE Expression OF (CaseSelector (SEMI CaseSelector)*) (ELSE StmtList)? SEMI? END;
+assignmentStmt: designator COLON_ASSIGN expression;
 
-CaseSelector: CaseLabel (COMMA CaseLabel)* COLON Statement;
-CaseLabel: ConstExpr (DOT_DOT ConstExpr)?;
-LoopStmt: RepeatStmt | WhileStmt | ForStmt;
+ifStmt: IF expression THEN statement (ELSE statement)?;
+caseStmt: CASE expression OF (caseSelector (SEMI caseSelector)*) (ELSE stmtList)? SEMI? END;
 
-RepeatStmt: REPEAT StmtList SEMI? UNTIL Expression;
+caseSelector: caseLabel (COMMA caseLabel)* COLON statement;
+caseLabel: constExpr (DOT_DOT constExpr)?;
+loopStmt: repeatStmt | whileStmt | forStmt;
 
-DO: DO_1 | DO_2 | DO_3;
-WhileStmt: WHILE Expression DO Statement;
-FOR: FOR_1 | FOR_2;
-ForStmt: FOR QualId COLON_ASSIGN Expression (TO | DOWNTO) Expression DO Statement;
+repeatStmt: REPEAT stmtList SEMI? UNTIL expression;
 
-EXCEPT: EXCEPT_1 | EXCEPT_2;
-WithStmt: WITH QualIdList DO Statement;
-TryExceptStmt: TRY
-                   Statement (SEMI Statement )*
+whileStmt: WHILE expression DO statement;
+
+forStmt: FOR qualId COLON_ASSIGN expression (TO | DOWNTO) expression DO statement;
+
+withStmt: WITH qualIdList DO statement;
+tryExceptStmt: TRY
+                   statement (SEMI statement )*
                  EXCEPT
-                   ExceptionBlock
+                   exceptionBlock
                  END;
 
-ExceptionBlock: (ON (Ident COLON)? TypeId DO Statement)? (SEMI ON (Ident COLON)? TypeId DO Statement)*
-                  (ELSE Statement* ) SEMI?;
+exceptionBlock: ON (Ident COLON)? typeId DO statement (SEMI ON (Ident COLON)? typeId DO statement)*
+                  (ELSE statement*) SEMI?;
 
-TryFinallyStmt: TRY Statement FINALLY  Statement SEMI? END; 
+tryFinallyStmt: TRY statement FINALLY  statement SEMI? END; 
 
-RaiseStmt: RAISE Ident? (AT Ident)?;
+raiseStmt: RAISE Ident? (AT Ident)?;
 
 //AssemblerStmt: ASM | <assemblylanguage> | END;
-ProcedureDeclSection: ProcedureDecl | FunctionDecl; 
-ProcedureDecl: ProcedureHeading SEMI Directive?  PortabilityDirective? Block SEMI;
-FunctionDecl: FunctionHeading SEMI Directive? PortabilityDirective? Block SEMI; 
-FunctionHeading: FUNCTION Ident FormalParameters? COLON (SimpleType | STRING);
-FUNCTION: FUNCTION_1 | FUNCTION_2;
-PROCEDURE: PROCEDURE_1 | PROCEDURE_2;
-ProcedureHeading: PROCEDURE Ident FormalParameters?;
-FormalParameters: LEFT_PAREN (FormalParm SEMI)* RIGHT_PAREN; 
+procedureDeclSection: procedureDecl | functionDecl; 
+procedureDecl: procedureHeading SEMI directive?  portabilityDirective? block SEMI;
+functionDecl: functionHeading SEMI directive? portabilityDirective? block SEMI; 
+functionHeading: FUNCTION Ident formalParameters? COLON (simpleType | STRING);
+procedureHeading: PROCEDURE Ident formalParameters?;
+formalParameters: LEFT_PAREN (formalParm SEMI)* RIGHT_PAREN; 
 
-FormalParm: (VAR | CONST | OUT)? Parameter;
+formalParm: (VAR | CONST | OUT)? parameter;
 
-Parameter: (IdentList (COLON ((ARRAY OF)? SimpleType | STRING | FILE))?) 
-| (Ident COLON SimpleType ASSIGN ConstExpr);
-OVERRIDE: OVERRIDE_1 | OVERRIDE_2;
-Directive: CDECL | REGISTER | DYNAMIC | VIRTUAL | EXPORT | ExternalDirective | NEAR | FAR | FORWARD | INLINE | ASSEMBLER | ( MESSAGE ConstExpr) | OVERRIDE | OVERLOAD | PASCAL | REINTRODUCE | SAFECALL |STDCALL | VARARGS | LOCAL | ABSTRACT;
+parameter: (identList (COLON ((ARRAY OF)? simpleType | STRING | FILE))?) 
+| (Ident COLON simpleType ASSIGN constExpr);
 
-ExternalDirective: EXTERNAL (String (NAME Ident*)?)?;
-ObjectType: OBJECT ObjHeritage? ObjFieldList? MethodList? END;
+directive: CDECL | REGISTER | DYNAMIC | VIRTUAL | EXPORT | externalDirective | NEAR | FAR | FORWARD | INLINE | ASSEMBLER | ( MESSAGE constExpr) | OVERRIDE | OVERLOAD | PASCAL | REINTRODUCE | SAFECALL |STDCALL | VARARGS | LOCAL | ABSTRACT;
 
-ObjHeritage: LEFT_PAREN QualId RIGHT_PAREN;
-MethodList: ((MethodHeading (SEMI VIRTUAL (SEMI ABSTRACT)?)?) SEMI)*;
-MethodHeading: (CLASS? (ProcedureHeading |FunctionHeading)) |  ConstructorHeading | DestructorHeading;
+externalDirective: EXTERNAL (string (NAME Ident*)?)?;
+objectType: OBJECT objHeritage? objFieldList? methodList? END;
 
-ConstructorHeading: CONSTRUCTOR Ident FormalParameters?;
-DestructorHeading: DESTRUCTOR Ident FormalParameters?;
-ObjFieldList:  (IdentList COLON Type) SEMI; 
-BEGIN: BEGIN_1 | BEGIN_2;
-InitSection: (INITIALIZATION StmtList (FINALIZATION StmtList)? END) | (BEGIN StmtList END) | END;
+objHeritage: LEFT_PAREN qualId RIGHT_PAREN;
+methodList: ((methodHeading (SEMI VIRTUAL (SEMI ABSTRACT)?)?) SEMI)*;
+methodHeading: (CLASS? (procedureHeading |functionHeading)) |  constructorHeading | destructorHeading;
+
+constructorHeading: CONSTRUCTOR Ident formalParameters?;
+destructorHeading: DESTRUCTOR Ident formalParameters?;
+objFieldList:  (identList COLON type) SEMI; 
+
+initSection: (INITIALIZATION stmtList (FINALIZATION stmtList)? END) | (BEGIN stmtList END) | END;
 
 //REGION CLASS
 
-PROTECTED:  PROTECTED_1 | PROTECTED_2;
 
-ClassType: CLASS ClassHeritage?
-             ClassVisibility?
-             ClassFieldList? 
+classType: CLASS classHeritage?
+             classVisibility?
+             classFieldList? 
 
-             ClassMethodList?
-             ClassPropertyList?
+             classMethodList?
+             classPropertyList?
              END;
-ClassHeritage: LEFT_PAREN IdentList RIGHT_PAREN;
+classHeritage: LEFT_PAREN identList RIGHT_PAREN;
 
-ClassVisibility: (PUBLIC | PROTECTED | PRIVATE | PUBLISHED)?;
+classVisibility: (PUBLIC | PROTECTED | PRIVATE | PUBLISHED)?;
 
-ClassFieldList: (ClassVisibility ObjFieldList SEMI)*;
+classFieldList: (classVisibility objFieldList SEMI)*;
 
-ClassMethodList: (ClassVisibility MethodList SEMI)*;
-ClassPropertyList: (ClassVisibility PropertyList SEMI)*;
+classMethodList: (classVisibility methodList SEMI)*;
+classPropertyList: (classVisibility propertyList SEMI)*;
 
-PropertyList: PROPERTY_1 Ident PropertyInterface? PropertySpecifiers? PortabilityDirective?;
+propertyList: PROPERTY_1 Ident propertyInterface? propertySpecifiers? portabilityDirective?;
 
-PropertyInterface: PropertyParameterList? COLON Ident;
-PropertyParameterList: LEFT_BRACKET (IdentList COLON TypeId) SEMI* RIGHT_BRACKET;
-PropertySpecifiers: (INDEX ConstExpr)?
+propertyInterface: propertyParameterList? COLON Ident;
+propertyParameterList: LEFT_BRACKET (identList COLON typeId) SEMI* RIGHT_BRACKET;
+propertySpecifiers: (INDEX constExpr)?
                       (READ Ident)?
                       (WRITE Ident)?
-                      (STORED (Ident | ConstExpr))?
-                      ((DEFAULT ConstExpr) | NODEFAULT)?
-                      (IMPLEMENTS TypeId)?;
-InterfaceType: INTERFACE 
-				(InterfaceHeritage)?
-                 (ClassMethodList)?
-                 (ClassPropertyList)?        
+                      (STORED (Ident | constExpr))?
+                      ((DEFAULT constExpr) | NODEFAULT)?
+                      (IMPLEMENTS typeId)?;
+interfaceType: INTERFACE 
+				(interfaceHeritage)?
+                 (classMethodList)?
+                 (classPropertyList)?        
                  END;
 
-InterfaceHeritage: LEFT_PAREN Ident RIGHT_PAREN;
+interfaceHeritage: LEFT_PAREN Ident RIGHT_PAREN;
 
 
-RequiresClause: REQUIRES IdentList+ SEMI;
-ContainsClause: CONTAINS IdentList+ SEMI;
-IdentList: Ident (COMMA Ident)+;
-QualIdList: QualId (COMMA QualId)+;
-QualId: (UnitId DOT)? (DOT Ident CARET+)?; 
-TypeId: (UnitId DOT)? PredefinedType;
+requiresClause: REQUIRES identList+ SEMI;
+containsClause: CONTAINS identList+ SEMI;
+identList: Ident (COMMA Ident)+;
+qualIdList: qualId (COMMA qualId)+;
+qualId: (unitId DOT)? (DOT Ident CARET+)?; 
+typeId: (unitId DOT)? predefinedType;
 
-PredefinedType: INTEGER | REAL | BOOLEAN | CHAR | BYTE;
+predefinedType: INTEGER | REAL | BOOLEAN | CHAR | BYTE;
 
 // Ident* -> <Case-Sensitive> Ident;
 //ENDREGION CLASS
-
-AlphaUC: ( 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 
-            'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' |  
-            'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z');
-AlphaLC:  ('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' |  
-            'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 
-            's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' |'z');
-Underscore:  '_' ;
 //OneChar: (Char |'''' (<character (except quote)> | Quote) '''';
-Char: CARET (AlphaUC|AlphaLC)|'#'(Integer|RadixNumber);
-Digit: ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9');             
-ConstExpr: (Number | String | Char | Integer AdditiveOp Integer);
-UnitId: Ident | Ident DOT Ident;  
-LabelId: Ident | Integer;
-String: StringLiteral;
-Number: SignedInteger ('.' Integer ['E' SignedInteger] )? | RadixNumber;
-RadixNumber: HexNumber | OctalNumber;
-HexNumber: HEXADECIMALDIGIT*;
-OctalNumber: OCTALDIGIT*;
-Integer: DIGIT* | RadixNumber; 
-SignedInteger: (PLUS | MINUS) Integer; 
-Quote: '"';
+char: CARET (UPPERCASE | LOWERCASE) | SHARP ( integer | radixNumber);             
+constExpr: (number | string | char | integer additiveOp integer);
+unitId: Ident | Ident DOT Ident;  
+labelId: Ident | integer;
+string: StringLiteral;
+number: signedInteger (DOT integer (E signedInteger)? )? | radixNumber;
+radixNumber: hexNumber | octalNumber;
+hexNumber: HEXADECIMALDIGIT*;
+octalNumber: OCTALDIGIT*;
+integer: DIGIT* | radixNumber; 
+signedInteger: (PLUS | MINUS) integer; 
