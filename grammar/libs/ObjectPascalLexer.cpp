@@ -910,8 +910,11 @@ void objectpascallexerLexerInitialize() {
 }
 
 ObjectPascalLexer::ObjectPascalLexer(CharStream *input) : Lexer(input) {
+	std::cout << "in lexer consctructor"<< std::endl;
   ObjectPascalLexer::initialize();
+  std::cout << "after initialize custom lexer"<< std::endl;
   _interpreter = new atn::LexerATNSimulator(this, *objectpascallexerLexerStaticData->atn, objectpascallexerLexerStaticData->decisionToDFA, objectpascallexerLexerStaticData->sharedContextCache);
+std::cout << "after lexer consctructor"<< std::endl;
 }
 
 ObjectPascalLexer::~ObjectPascalLexer() {
