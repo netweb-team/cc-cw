@@ -733,8 +733,7 @@ static unique_ptr<FunctionAST> ParseTopLevelExpr()
     if (auto E = ParseExpression())
     {
         // Make an anonymous proto.
-        auto Proto = make_unique<PrototypeAST>("__anon_expr",
-                                                    vector<string>());
+        auto Proto = make_unique<PrototypeAST>("main", vector<string>());
         return make_unique<FunctionAST>(move(Proto), move(E));
     }
     return nullptr;
@@ -1321,7 +1320,7 @@ int main()
 
     TheModule->setDataLayout(TheTargetMachine->createDataLayout());
 
-    auto Filename = "output.o";
+    auto Filename = "output.s";
     error_code EC;
     raw_fd_ostream dest(Filename, EC, sys::fs::OF_None);
 
@@ -1332,7 +1331,7 @@ int main()
     }
 
     legacy::PassManager pass;
-    auto FileType = CGFT_ObjectFile;
+    auto FileType = CGFT_AssemblyFile;
 
     if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType))
     {
@@ -1345,6 +1344,6 @@ int main()
 
     outs() << "Wrote " << Filename << "\n";
 
-    execl("/bin/g++", "/bin/g++", "test.cpp", Filename, "-o", "main", NULL);
+    //execl("/bin/g++", "/bin/g++", "test.cpp", Filename, "-o", "main", NULL);
     return 0;
 }
