@@ -44,15 +44,13 @@ public:
     PLUS = 158, MINUS = 159, STAR = 160, DIV_ = 161, DOG = 162, SHARP = 163, 
     LESS_DIV = 164, NEAR = 165, INLINE = 166, ASSEMBLER = 167, PLATFORM = 168, 
     DEPRECATED = 169, CARDINAL = 170, INT64 = 171, LONGWORD = 172, UNICODESTRING = 173, 
-    QUOTE = 174, E = 175, Ident = 176, DecimalLiteral = 177, OctalLiteral = 178, 
-    HexadecimalLiteral = 179, BinaryLiteral = 180, Integersuffix = 181, 
-    UserDefinedIntegerLiteral = 182, UserDefinedFloatingLiteral = 183, UserDefinedStringLiteral = 184, 
-    UserDefinedCharacterLiteral = 185, Whitespace = 186, Newline = 187, 
-    BlockComment = 188, LineComment = 189, IntegerLiteral = 190, CharacterLiteral = 191, 
-    FloatingLiteral = 192, StringLiteral = 193, BooleanLiteral = 194, UserDefinedLiteral = 195, 
-    MultiLineMacro = 196, ARRAY = 197, VAR = 198, NOT = 199, DIV = 200, 
-    AND = 201, AS = 202, IF = 203, DO = 204, FOR = 205, EXCEPT = 206, FUNCTION = 207, 
-    PROCEDURE = 208, OVERRIDE = 209, BEGIN = 210, PROTECTED = 211
+    QUOTE = 174, E = 175, SINGLE_QUOTE = 176, Ident = 177, DecimalLiteral = 178, 
+    OctalLiteral = 179, HexadecimalLiteral = 180, BinaryLiteral = 181, Integersuffix = 182, 
+    UserDefinedIntegerLiteral = 183, UserDefinedFloatingLiteral = 184, UserDefinedStringLiteral = 185, 
+    UserDefinedCharacterLiteral = 186, Whitespace = 187, Newline = 188, 
+    BlockComment = 189, LineComment = 190, IntegerLiteral = 191, CharacterLiteral = 192, 
+    FloatingLiteral = 193, StringLiteral = 194, BooleanLiteral = 195, UserDefinedLiteral = 196, 
+    MultiLineMacro = 197
   };
 
   explicit ObjectPascalLexer(antlr4::CharStream *input);

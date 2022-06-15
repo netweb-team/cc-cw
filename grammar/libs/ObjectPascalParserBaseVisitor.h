@@ -67,6 +67,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitExportsStmt(ObjectPascalParser::ExportsStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitExportsItem(ObjectPascalParser::ExportsItemContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitDeclSection(ObjectPascalParser::DeclSectionContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -275,11 +283,19 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitBegin(ObjectPascalParser::BeginContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitCompoundStmt(ObjectPascalParser::CompoundStmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual std::any visitConditionalStmt(ObjectPascalParser::ConditionalStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitProcedureCall(ObjectPascalParser::ProcedureCallContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -528,6 +544,62 @@ public:
   }
 
   virtual std::any visitSignedInteger(ObjectPascalParser::SignedIntegerContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitArray(ObjectPascalParser::ArrayContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitVar(ObjectPascalParser::VarContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitNot(ObjectPascalParser::NotContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitDiv(ObjectPascalParser::DivContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAnd(ObjectPascalParser::AndContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAs(ObjectPascalParser::AsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitIf(ObjectPascalParser::IfContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitDo(ObjectPascalParser::DoContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFor(ObjectPascalParser::ForContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitExcept(ObjectPascalParser::ExceptContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFunction(ObjectPascalParser::FunctionContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitProcedure(ObjectPascalParser::ProcedureContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOverride(ObjectPascalParser::OverrideContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitProtected(ObjectPascalParser::ProtectedContext *ctx) override {
     return visitChildren(ctx);
   }
 

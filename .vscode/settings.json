@@ -1,11 +1,11 @@
-{
-    "antlr4.generation": {
-        "mode": "external",
-        "outputDir": "antlr4-runtime",
-        "language": "Cpp",
-        "listeners": false,
-        "visitors": true
-    },
+// {
+//     "antlr4.generation": {
+//         "mode": "external",
+//         "outputDir": "antlr4-runtime",
+//         "language": "Cpp",
+//         "listeners": false,
+//         "visitors": true
+//     },
     "files.associations": {
         "any": "cpp",
         "array": "cpp",

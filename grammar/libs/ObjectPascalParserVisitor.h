@@ -45,6 +45,10 @@ public:
 
     virtual std::any visitBlock(ObjectPascalParser::BlockContext *context) = 0;
 
+    virtual std::any visitExportsStmt(ObjectPascalParser::ExportsStmtContext *context) = 0;
+
+    virtual std::any visitExportsItem(ObjectPascalParser::ExportsItemContext *context) = 0;
+
     virtual std::any visitDeclSection(ObjectPascalParser::DeclSectionContext *context) = 0;
 
     virtual std::any visitLabelDeclSection(ObjectPascalParser::LabelDeclSectionContext *context) = 0;
@@ -149,9 +153,13 @@ public:
 
     virtual std::any visitStructStmt(ObjectPascalParser::StructStmtContext *context) = 0;
 
+    virtual std::any visitBegin(ObjectPascalParser::BeginContext *context) = 0;
+
     virtual std::any visitCompoundStmt(ObjectPascalParser::CompoundStmtContext *context) = 0;
 
     virtual std::any visitConditionalStmt(ObjectPascalParser::ConditionalStmtContext *context) = 0;
+
+    virtual std::any visitProcedureCall(ObjectPascalParser::ProcedureCallContext *context) = 0;
 
     virtual std::any visitAssignmentStmt(ObjectPascalParser::AssignmentStmtContext *context) = 0;
 
@@ -276,6 +284,34 @@ public:
     virtual std::any visitInteger(ObjectPascalParser::IntegerContext *context) = 0;
 
     virtual std::any visitSignedInteger(ObjectPascalParser::SignedIntegerContext *context) = 0;
+
+    virtual std::any visitArray(ObjectPascalParser::ArrayContext *context) = 0;
+
+    virtual std::any visitVar(ObjectPascalParser::VarContext *context) = 0;
+
+    virtual std::any visitNot(ObjectPascalParser::NotContext *context) = 0;
+
+    virtual std::any visitDiv(ObjectPascalParser::DivContext *context) = 0;
+
+    virtual std::any visitAnd(ObjectPascalParser::AndContext *context) = 0;
+
+    virtual std::any visitAs(ObjectPascalParser::AsContext *context) = 0;
+
+    virtual std::any visitIf(ObjectPascalParser::IfContext *context) = 0;
+
+    virtual std::any visitDo(ObjectPascalParser::DoContext *context) = 0;
+
+    virtual std::any visitFor(ObjectPascalParser::ForContext *context) = 0;
+
+    virtual std::any visitExcept(ObjectPascalParser::ExceptContext *context) = 0;
+
+    virtual std::any visitFunction(ObjectPascalParser::FunctionContext *context) = 0;
+
+    virtual std::any visitProcedure(ObjectPascalParser::ProcedureContext *context) = 0;
+
+    virtual std::any visitOverride(ObjectPascalParser::OverrideContext *context) = 0;
+
+    virtual std::any visitProtected(ObjectPascalParser::ProtectedContext *context) = 0;
 
 
 };
