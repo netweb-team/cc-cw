@@ -2,7 +2,7 @@
 #include <iostream>
 
 LLVMContext TheContext;
-std::unique_ptr<Module> TheModule(std::make_unique<Module>("mila", TheContext));
+std::unique_ptr<Module> TheModule(std::make_unique<Module>("my module", TheContext));
 IRBuilder<> Builder = IRBuilder<>(TheContext);
 std::map<std::string, Value *> NamedValues;
 std::map<std::string, Value *> ConstValues;
@@ -25,6 +25,46 @@ Function *main_func = dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInse
 
 // Create basic block and start inserting into it
 BasicBlock *mainBlock = BasicBlock::Create(TheModule->getContext(), "main.0", main_func);
+
+void WriteFile(const std::string& name)
+{
+    InitializeAllTargetInfos();
+    InitializeAllTargets();
+    InitializeAllTargetMCs();
+    InitializeAllAsmParsers();
+    InitializeAllAsmPrinters();
+
+    auto TargetTriple = sys::getDefaultTargetTriple();
+    TheModule->setTargetTriple(TargetTriple);
+
+    std::string error;
+    auto Target = TargetRegistry::lookupTarget(TargetTriple, error);
+    if (!Target)
+    {
+        errs() << error;
+        return;
+    }
+    
+    auto TheTargetMachine = Target->createTargetMachine(TargetTriple, "generic", "", TargetOptions(), Optional<Reloc::Model>());
+    TheModule->setDataLayout(TheTargetMachine->createDataLayout());
+
+    std::string filename = name + ".o";
+    std::error_code ec;
+    raw_fd_ostream dest(filename, ec, sys::fs::OF_None);
+    if (ec)
+    {
+        errs() << "Can't open a file:" << ec.message();
+        return;
+    }
+
+    legacy::PassManager Pass;
+    auto filetype = CGFT_ObjectFile;
+    TheTargetMachine->addPassesToEmitFile(Pass, dest, nullptr, filetype);
+    Pass.run(*TheModule);
+    dest.flush();
+
+    execl(GPP, GPP, "inc.o", filename, "-o", name, NULL);
+}
 
 Type *getType(TypeName t)
 {
@@ -63,11 +103,7 @@ Value *ProgramExprAST::codegen()
 
     Builder.CreateRet(NumberExprAST(0).codegen());
 
-    // Write the code out
-    std::error_code EC;
-    raw_ostream *out = new raw_fd_ostream(std::string("binary/") + Name, EC, sys::fs::F_None);
-    WriteBitcodeToFile(*(TheModule.get()), *out);
-    delete out;
+    WriteFile(Name);
 }
 
 Value *getNumberValue(double Val, TypeName t)

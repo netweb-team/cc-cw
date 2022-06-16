@@ -11,18 +11,25 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
-#include "llvm/Bitcode/BitcodeReader.h"
-#include "llvm/Bitcode/BitcodeWriter.h"
+#include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Host.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
 
 #include <cctype>
 #include <cstdlib>
+#include <unistd.h>
 
 #include <map>
 #include <string>
 #include <vector>
+
+#define GPP "/bin/g++"
 
 using namespace llvm;
 
@@ -46,6 +53,8 @@ enum TypeName
     AnsiString,
     WideString,
 };
+
+void WriteFile(const std::string& name);
 
 Type *getType(TypeName t);
 Value *getNumberValue(double Val, TypeName t);
