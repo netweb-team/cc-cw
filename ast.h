@@ -13,6 +13,9 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Bitcode/BitcodeReader.h"
+#include "llvm/Bitcode/BitcodeWriter.h"
+#include "llvm/Support/FileSystem.h"
 
 #include <cctype>
 #include <cstdlib>
@@ -44,8 +47,8 @@ enum TypeName
     WideString,
 };
 
-Type *getType(TypeName &t);
-Value *getNumberValue(double Val, TypeName &t);
+Type *getType(TypeName t);
+Value *getNumberValue(double Val, TypeName t);
 
 // Base class
 class ExprAST
@@ -63,6 +66,19 @@ class ExprListAST : public ExprAST
 
 public:
     ExprListAST(std::vector<std::unique_ptr<ExprAST>> Nodes) : Nodes(std::move(Nodes)) {}
+    Value *codegen() override;
+};
+
+// ProgramExprAST - class for program overall
+class ProgramExprAST : public ExprAST
+{
+    std::string Name;
+    std::unique_ptr<ExprListAST> Declarations;
+    std::unique_ptr<ExprListAST> MainBlock;
+
+public:
+    ProgramExprAST(const std::string& Name, std::unique_ptr<ExprListAST> Decls, std::unique_ptr<ExprListAST> Block) : 
+        Name(Name), Declarations(std::move(Decls)), MainBlock(std::move(Block)) {}
     Value *codegen() override;
 };
 

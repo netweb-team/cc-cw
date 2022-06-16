@@ -10,26 +10,23 @@ std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
 std::map<std::string, Function *> Library
 {
     std::make_pair("readln",
-                   dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("readln", IntegerType::getInt32Ty(TheModule->getContext()),
-                                                                                        PointerType::getUnqual(IntegerType::getInt32Ty(TheModule->getContext())))
+                   dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("readln", getType(Integer), PointerType::getUnqual(getType(Integer)))
                                                              .getCallee()))),
     std::make_pair("inc",
-                   dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("inc", IntegerType::getInt32Ty(TheModule->getContext()),
-                                                                                        PointerType::getUnqual(IntegerType::getInt32Ty(TheModule->getContext())))
+                   dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("inc", getType(Integer), PointerType::getUnqual(getType(Integer)))
                                                              .getCallee()))),
     std::make_pair("dec",
-                   dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("dec", IntegerType::getInt32Ty(TheModule->getContext()),
-                                                                                        PointerType::getUnqual(IntegerType::getInt32Ty(TheModule->getContext())))
+                   dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("dec", getType(Integer), PointerType::getUnqual(getType(Integer)))
                                                              .getCallee())))
 };
 
 // Create main function
-Function *main_func = dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("main", IntegerType::getInt32Ty(TheModule->getContext()), NULL).getCallee()));
+Function *main_func = dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("main", getType(Integer), NULL).getCallee()));
 
 // Create basic block and start inserting into it
 BasicBlock *mainBlock = BasicBlock::Create(TheModule->getContext(), "main.0", main_func);
 
-Type *getType(TypeName &t)
+Type *getType(TypeName t)
 {
     switch (t)
     {
@@ -56,7 +53,24 @@ Type *getType(TypeName &t)
     return Type::getVoidTy(TheContext);
 }
 
-Value *getNumberValue(double Val, TypeName &t)
+Value *ProgramExprAST::codegen()
+{
+    PrototypeAST("writeln", {"x"}, {Integer}, Integer).codegen();
+
+    Builder.SetInsertPoint(mainBlock);
+    Declarations->codegen();
+    MainBlock->codegen();
+
+    Builder.CreateRet(NumberExprAST(0).codegen());
+
+    // Write the code out
+    std::error_code EC;
+    raw_ostream *out = new raw_fd_ostream(std::string("binary/") + Name, EC, sys::fs::F_None);
+    WriteBitcodeToFile(*(TheModule.get()), *out);
+    delete out;
+}
+
+Value *getNumberValue(double Val, TypeName t)
 {
     switch (t)
     {
