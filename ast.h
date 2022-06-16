@@ -47,15 +47,16 @@ enum TypeName
 Type *getType(TypeName &t);
 Value *getNumberValue(double Val, TypeName &t);
 
+// Base class
 class ExprAST
 {
 public:
     TypeName type;
     virtual ~ExprAST() {}
     virtual Value *codegen() = 0;
-    virtual void print() const = 0;
 };
 
+// ExprListAST - class for program block - list of expression
 class ExprListAST : public ExprAST
 {
     std::vector<std::unique_ptr<ExprAST>> Nodes;
@@ -63,10 +64,9 @@ class ExprListAST : public ExprAST
 public:
     ExprListAST(std::vector<std::unique_ptr<ExprAST>> Nodes) : Nodes(std::move(Nodes)) {}
     Value *codegen() override;
-    void print() const override;
 };
 
-/// NumberExprAST - Expression class for numeric literals like "1".
+// NumberExprAST - class for numeric literals like "1".
 class NumberExprAST : public ExprAST
 {
     double Val;
@@ -76,6 +76,7 @@ public:
     Value *codegen() override;
 };
 
+// StringExprAST - class for string literals.
 class StringExprAST : public ExprAST
 {
     std::string Val;
@@ -85,6 +86,7 @@ public:
     Value *codegen() override;
 };
 
+// ConstExprAST - class for const declaration
 class ConstExprAST : public ExprAST
 {
     std::string Name;
@@ -93,9 +95,9 @@ class ConstExprAST : public ExprAST
 public:
     ConstExprAST(const std::string &Name, double Val, const TypeName &Type = Integer) : Name(Name), Val(Val) { type = Type; }
     Value *codegen() override;
-    void print() const override;
 };
 
+// DeclareExprAST - class for variable/array declaration
 class DeclareExprAST : public ExprAST
 {
     std::string Name;
@@ -105,10 +107,9 @@ class DeclareExprAST : public ExprAST
 public:
     DeclareExprAST(const std::string &Name, const TypeName &Type = Integer, int Offset = 0, int Length = 0) : Name(Name), Offset(Offset), Length(Length) { type = Type; }
     Value *codegen() override;
-    void print() const override;
 };
 
-/// VariableExprAST - Expression class for referencing a variable, like "a".
+/// VariableExprAST - class for referencing a variable, like "a".
 class VariableExprAST : public ExprAST
 {
 protected:
@@ -117,11 +118,11 @@ protected:
 public:
     VariableExprAST(const std::string &Name) : Name(Name) {}
     Value *codegen() override;
-    void print() const override;
     const std::string &getName() const { return Name; }
     virtual Value *alloca() const;
 };
 
+// ArrayExprAST - class for referencing array element
 class ArrayExprAST : public VariableExprAST
 {
     std::unique_ptr<ExprAST> Index;
@@ -129,7 +130,6 @@ class ArrayExprAST : public VariableExprAST
 public:
     ArrayExprAST(const std::string &Name, std::unique_ptr<ExprAST> Index, const TypeName &Type = Integer) : VariableExprAST(Name), Index(std::move(Index)) { type = Type; }
     Value *codegen() override;
-    void print() const override;
     virtual Value *alloca() const;
 };
 
@@ -153,7 +153,7 @@ enum OperEnum
 
 int getPrecedence(OperEnum &op);
 
-/// BinaryExprAST - Expression class for a binary operator.
+// BinaryExprAST - class for a binary operator.
 class BinaryExprAST : public ExprAST
 {
     OperEnum Op;
@@ -164,10 +164,9 @@ public:
                   std::unique_ptr<ExprAST> RHS)
         : Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
     Value *codegen() override;
-    void print() const override;
 };
 
-/// IfExprAST - Expression class for if/then/else.
+// IfExprAST - class for if/then/else.
 class IfExprAST : public ExprAST
 {
     std::unique_ptr<ExprAST> Cond, Then, Else;
@@ -178,10 +177,9 @@ public:
         : Cond(std::move(Cond)), Then(std::move(Then)), Else(std::move(Else)) {}
 
     Value *codegen() override;
-    void print() const override;
 };
 
-/// ForExprAST - Expression class for for/in.
+// ForExprAST -  class for for/to(downto).
 class ForExprAST : public ExprAST
 {
     std::string VarName;
@@ -195,9 +193,9 @@ public:
           Step(std::move(Step)), Body(std::move(Body)) {}
 
     Value *codegen() override;
-    void print() const override;
 };
 
+// WhileExprAST -  class for while/do.
 class WhileExprAST : public ExprAST
 {
     std::unique_ptr<ExprAST> Cond, Body;
@@ -206,9 +204,9 @@ public:
     WhileExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Body)
         : Cond(std::move(Cond)), Body(std::move(Body)) {}
     Value *codegen() override;
-    void print() const override;
 };
 
+// RepeatExprAST -  class for repeat/until.
 class RepeatExprAST : public ExprAST
 {
     std::unique_ptr<ExprAST> Cond, Body;
@@ -219,7 +217,7 @@ public:
     Value *codegen() override;
 };
 
-/// CallExprAST - Expression class for function calls.
+// CallExprAST - class for function calls.
 class CallExprAST : public ExprAST
 {
     std::string Callee;
@@ -230,9 +228,9 @@ public:
                 std::vector<std::unique_ptr<ExprAST>> Args)
         : Callee(Callee), Args(std::move(Args)) {}
     Value *codegen() override;
-    void print() const override;
 };
 
+// LibraryExprAST - class for function (from standard library) calls
 class LibraryExprAST : public ExprAST
 {
     std::string Name;
@@ -241,20 +239,17 @@ class LibraryExprAST : public ExprAST
 public:
     LibraryExprAST(const std::string &Name, const std::string &Arg) : Name(Name), Arg(Arg) {}
     Value *codegen() override;
-    void print() const override;
 };
 
+// ReturnExprAST - class for return statement
 class ReturnExprAST : public ExprAST
 {
 public:
     ReturnExprAST() {}
     Value *codegen() override;
-    void print() const override;
 };
 
-/// PrototypeAST - This class represents the "prototype" for a function,
-/// which captures its name, and its argument names (thus implicitly the number
-/// of arguments the function takes).
+// PrototypeAST - class represents prototype for a function
 class PrototypeAST : public ExprAST
 {
     std::string Name;
@@ -266,11 +261,10 @@ public:
     PrototypeAST(const std::string &Name, std::vector<std::string> Args, std::vector<TypeName> ArgTypes, TypeName Ret)
         : Name(Name), Args(std::move(Args)), Types(std::move(ArgTypes)), ReturnType(Ret) {}
     Function *codegen() override;
-    void print() const override;
     const std::string &getName() const { return Name; }
 };
 
-/// FunctionAST - This class represents a function definition itself.
+// FunctionAST - class represents a function definition itself.
 class FunctionAST : public ExprAST
 {
     std::unique_ptr<PrototypeAST> Proto;
@@ -281,7 +275,6 @@ public:
                 std::vector<std::unique_ptr<ExprAST>> Body)
         : Proto(std::move(Proto)), Body(std::move(Body)) {}
     Function *codegen() override;
-    void print() const override;
 };
 
 //################################################################################
