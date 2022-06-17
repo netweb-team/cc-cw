@@ -2,11 +2,12 @@
 #include <iostream>
 
 LLVMContext TheContext;
-std::unique_ptr<Module> TheModule(std::make_unique<Module>("mila", TheContext));
+std::unique_ptr<Module> TheModule(std::make_unique<Module>("my module", TheContext));
 IRBuilder<> Builder = IRBuilder<>(TheContext);
 std::map<std::string, Value *> NamedValues;
 std::map<std::string, Value *> ConstValues;
 std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
+std::map<std::string, Type *> CustomTypes; 
 std::map<std::string, Function *> Library
 {
     std::make_pair("readln",
@@ -26,7 +27,47 @@ Function *main_func = dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInse
 // Create basic block and start inserting into it
 BasicBlock *mainBlock = BasicBlock::Create(TheModule->getContext(), "main.0", main_func);
 
-Type *getType(TypeName t)
+void WriteFile(const std::string& name)
+{
+    InitializeAllTargetInfos();
+    InitializeAllTargets();
+    InitializeAllTargetMCs();
+    InitializeAllAsmParsers();
+    InitializeAllAsmPrinters();
+
+    auto TargetTriple = sys::getDefaultTargetTriple();
+    TheModule->setTargetTriple(TargetTriple);
+
+    std::string error;
+    auto Target = TargetRegistry::lookupTarget(TargetTriple, error);
+    if (!Target)
+    {
+        errs() << error;
+        return;
+    }
+    
+    auto TheTargetMachine = Target->createTargetMachine(TargetTriple, "generic", "", TargetOptions(), Optional<Reloc::Model>());
+    TheModule->setDataLayout(TheTargetMachine->createDataLayout());
+
+    std::string filename = name + ".o";
+    std::error_code ec;
+    raw_fd_ostream dest(filename, ec, sys::fs::OF_None);
+    if (ec)
+    {
+        errs() << "Can't open a file:" << ec.message();
+        return;
+    }
+
+    legacy::PassManager Pass;
+    auto filetype = CGFT_ObjectFile;
+    TheTargetMachine->addPassesToEmitFile(Pass, dest, nullptr, filetype);
+    Pass.run(*TheModule);
+    dest.flush();
+
+    execl(GPP, GPP, "inc.o", filename, "-o", name, NULL);
+}
+
+Type *getType(TypeName t, const std::string& custom = "")
 {
     switch (t)
     {
@@ -47,27 +88,14 @@ Type *getType(TypeName t)
         return Type::getInt32Ty(TheContext);
     case Char:
         return Type::getInt8Ty(TheContext);
+    case Custom:
+        auto type = CustomTypes[custom];
+        if (type)
+            return type;
     default:
         throw("Unknown typename");
     }
     return Type::getVoidTy(TheContext);
-}
-
-Value *ProgramExprAST::codegen()
-{
-    PrototypeAST("writeln", {"x"}, {Integer}, Integer).codegen();
-
-    Builder.SetInsertPoint(mainBlock);
-    Declarations->codegen();
-    MainBlock->codegen();
-
-    Builder.CreateRet(NumberExprAST(0).codegen());
-
-    // Write the code out
-    std::error_code EC;
-    raw_ostream *out = new raw_fd_ostream(std::string("binary/") + Name, EC, sys::fs::F_None);
-    WriteBitcodeToFile(*(TheModule.get()), *out);
-    delete out;
 }
 
 Value *getNumberValue(double Val, TypeName t)
@@ -128,6 +156,19 @@ int getPrecedence(OperEnum &op)
 //===----------------------------------------------------------------------===//
 // Code Generation
 //===----------------------------------------------------------------------===//
+
+Value *ProgramExprAST::codegen()
+{
+    PrototypeAST("writeln", {"x"}, {Integer}, Integer).codegen();
+
+    Builder.SetInsertPoint(mainBlock);
+    Declarations->codegen();
+    MainBlock->codegen();
+
+    Builder.CreateRet(NumberExprAST(0).codegen());
+
+    WriteFile(Name);
+}
 
 Value *NumberExprAST::codegen()
 {
@@ -328,7 +369,7 @@ Function *PrototypeAST::codegen()
 Function *FunctionAST::codegen()
 {
     // First, check for an existing function from a previous 'extern' declaration.
-    Function *TheFunction = TheModule->getFunction(Proto->getName());
+    Function *TheFunction = TheModule->getFunction(Proto->Name);
 
     if (!TheFunction)
         TheFunction = Proto->codegen();
@@ -613,6 +654,53 @@ Value *WhileExprAST::codegen()
     return Constant::getNullValue(Type::getInt32Ty(TheContext));
 }
 
+Value *TypeExprAST::codegen() 
+{
+    for (int i = 0; i < Declarations.size(); i++)
+    {
+        std::string name = Declarations[i]->Name;
+        if (CustomTypes[name])
+            throw("Redeclaration of type - already exists");
+        if (Declarations[i]->type == Custom)
+            CustomTypes[name] = StructType::create(TheContext, name);
+        else 
+            CustomTypes[name] = getType(Declarations[i]->type);
+    }
+    for (int i = 0; i < Declarations.size(); i++)
+        if (Declarations[i]->type == Custom)
+            Declarations[i]->codegen();
+    return Constant::getNullValue(Type::getInt32Ty(TheContext));
+}
+
+Value *RecordAST::codegen()
+{
+    std::vector<Type *> data;
+    for (int i = 0; i < DataMembers.size(); i++) 
+        data.push_back(getType(DataMembers[i]->type));
+    StructType *t = TheModule->getTypeByName(Name);
+    if (t)
+        t->setBody(data);
+    return Constant::getNullValue(Type::getInt32Ty(TheContext));
+}
+
+Value *ClassAST::codegen()
+{
+    std::vector<Type *> data;
+    for (int i = 0; i < DataMembers.size(); i++) 
+        data.push_back(getType(DataMembers[i]->type));
+    StructType *t = TheModule->getTypeByName(Name);
+    if (t)
+    {
+        t->setBody(data);
+        for (int i = 0; i < ProtoMembers.size(); i++)
+        {
+            ProtoMembers[i]->Name = Name + "." + ProtoMembers[i]->Name;
+            ProtoMembers[i]->codegen();
+        }
+    }
+    return Constant::getNullValue(Type::getInt32Ty(TheContext));
+}
+
 //#######################################################################################
 
 Value *VariableExprAST::alloca(void) const
@@ -631,7 +719,7 @@ Value *ArrayExprAST::alloca(void) const
     Value *V = NamedValues[sugar];
     if (!V)
         throw("Unknown array name");
-    auto ptr = Builder.CreateGEP(Type::getInt32Ty(TheContext), V, Index->codegen());
+    auto ptr = Builder.CreateGEP(getType(type), V, Index->codegen());
     return ptr;
 }
 

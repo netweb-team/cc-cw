@@ -11,23 +11,31 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
-#include "llvm/Bitcode/BitcodeReader.h"
-#include "llvm/Bitcode/BitcodeWriter.h"
+#include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/FileSystem.h"
+#include "llvm/Support/Host.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
 
 #include <cctype>
 #include <cstdlib>
+#include <unistd.h>
 
 #include <map>
 #include <string>
 #include <vector>
 
+#define GPP "/bin/g++"
+
 using namespace llvm;
 
 enum TypeName
 {
+    Void,
     Boolean,
     Real,
     Single,
@@ -45,9 +53,12 @@ enum TypeName
     String,
     AnsiString,
     WideString,
+    Custom,
 };
 
-Type *getType(TypeName t);
+void WriteFile(const std::string &name);
+
+Type *getType(TypeName t, const std::string &custom = "");
 Value *getNumberValue(double Val, TypeName t);
 
 // Base class
@@ -77,8 +88,7 @@ class ProgramExprAST : public ExprAST
     std::unique_ptr<ExprListAST> MainBlock;
 
 public:
-    ProgramExprAST(const std::string& Name, std::unique_ptr<ExprListAST> Decls, std::unique_ptr<ExprListAST> Block) : 
-        Name(Name), Declarations(std::move(Decls)), MainBlock(std::move(Block)) {}
+    ProgramExprAST(const std::string &Name, std::unique_ptr<ExprListAST> Decls, std::unique_ptr<ExprListAST> Block) : Name(Name), Declarations(std::move(Decls)), MainBlock(std::move(Block)) {}
     Value *codegen() override;
 };
 
@@ -240,8 +250,7 @@ class CallExprAST : public ExprAST
     std::vector<std::unique_ptr<ExprAST>> Args;
 
 public:
-    CallExprAST(const std::string &Callee,
-                std::vector<std::unique_ptr<ExprAST>> Args)
+    CallExprAST(const std::string &Callee, std::vector<std::unique_ptr<ExprAST>> Args)
         : Callee(Callee), Args(std::move(Args)) {}
     Value *codegen() override;
 };
@@ -268,16 +277,15 @@ public:
 // PrototypeAST - class represents prototype for a function
 class PrototypeAST : public ExprAST
 {
+public:
     std::string Name;
     std::vector<std::string> Args;
     std::vector<TypeName> Types;
     TypeName ReturnType;
 
-public:
     PrototypeAST(const std::string &Name, std::vector<std::string> Args, std::vector<TypeName> ArgTypes, TypeName Ret)
         : Name(Name), Args(std::move(Args)), Types(std::move(ArgTypes)), ReturnType(Ret) {}
     Function *codegen() override;
-    const std::string &getName() const { return Name; }
 };
 
 // FunctionAST - class represents a function definition itself.
@@ -291,6 +299,41 @@ public:
                 std::vector<std::unique_ptr<ExprAST>> Body)
         : Proto(std::move(Proto)), Body(std::move(Body)) {}
     Function *codegen() override;
+};
+
+// RecordAST - class for record (struct) definition
+class RecordAST : public ExprAST
+{
+protected:
+    std::vector<std::unique_ptr<ExprAST>> DataMembers;
+
+public:
+    std::string Name;
+
+    RecordAST(const std::string &Name, std::vector<std::unique_ptr<ExprAST>> Body, const TypeName &Type = Custom) : 
+        Name(Name), DataMembers(std::move(Body)) { type = Type; }
+    Value *codegen() override;
+};
+
+// ClassAST - class for class definition
+class ClassAST : public RecordAST
+{
+    std::vector<std::unique_ptr<PrototypeAST>> ProtoMembers;
+
+public:
+    ClassAST(const std::string &Name, std::vector<std::unique_ptr<ExprAST>> Data, std::vector<std::unique_ptr<PrototypeAST>> Proto) : 
+             RecordAST(Name, std::move(Data)), ProtoMembers(std::move(Proto)) {}
+    Value *codegen() override;
+};
+
+// TypeExprAST - class for type directive
+class TypeExprAST : public ExprAST
+{
+    std::vector<std::unique_ptr<RecordAST>> Declarations;
+
+public:
+    TypeExprAST(std::vector<std::unique_ptr<RecordAST>> Decls) : Declarations(std::move(Decls)) {}
+    Value *codegen() override;
 };
 
 //################################################################################
