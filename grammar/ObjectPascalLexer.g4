@@ -1,5 +1,7 @@
 lexer grammar ObjectPascalLexer;
 
+
+DOT_DOT: '..';
 PROGRAM: 'program'; 
 PACKAGE: 'package';
 END: 'end';
@@ -150,7 +152,6 @@ RIGHT_BRACKET: ']';
 COMMA: ',';
 ASSIGN: '=';
 COLON: ':';
-DOT_DOT: '..';
 CARET: '^';
 COLON_ASSIGN: ':=';
 GRATER: '>';

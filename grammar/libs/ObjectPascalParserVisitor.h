@@ -195,6 +195,10 @@ public:
 
     virtual std::any visitFunctionDecl(ObjectPascalParser::FunctionDeclContext *context) = 0;
 
+    virtual std::any visitConstructorDecl(ObjectPascalParser::ConstructorDeclContext *context) = 0;
+
+    virtual std::any visitDestructorDecl(ObjectPascalParser::DestructorDeclContext *context) = 0;
+
     virtual std::any visitFunctionHeading(ObjectPascalParser::FunctionHeadingContext *context) = 0;
 
     virtual std::any visitProcedureHeading(ObjectPascalParser::ProcedureHeadingContext *context) = 0;
@@ -265,6 +269,8 @@ public:
 
     virtual std::any visitCharExpr(ObjectPascalParser::CharExprContext *context) = 0;
 
+    virtual std::any visitSubrangeExp(ObjectPascalParser::SubrangeExpContext *context) = 0;
+
     virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *context) = 0;
 
     virtual std::any visitUnitId(ObjectPascalParser::UnitIdContext *context) = 0;
@@ -312,6 +318,8 @@ public:
     virtual std::any visitOverride(ObjectPascalParser::OverrideContext *context) = 0;
 
     virtual std::any visitProtected(ObjectPascalParser::ProtectedContext *context) = 0;
+
+    virtual std::any visitIdentDifficlt(ObjectPascalParser::IdentDifficltContext *context) = 0;
 
 
 };

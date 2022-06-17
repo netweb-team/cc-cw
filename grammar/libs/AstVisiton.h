@@ -6,21 +6,26 @@
 
 #include "antlr4-runtime.h"
 #include "ObjectPascalParserVisitor.h"
+#include "../../ast.h"
 
 
 /**
  * This class provides an empty implementation of ObjectPascalParserVisitor, which can be
  * extended to create a visitor which only needs to handle a subset of the available methods.
  */
-class  ObjectPascalParserBaseVisitor : public ObjectPascalParserVisitor {
+class AstVisitor : public ObjectPascalParserVisitor {
 public:
 
   virtual std::any visitGoal(ObjectPascalParser::GoalContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitProgram(ObjectPascalParser::ProgramContext *ctx) override {
-    return visitChildren(ctx);
+  virtual std::unique_ptr<ProgramExprAST> visitProgram(ObjectPascalParser::ProgramContext *ctx) override {
+    return std::make_unique<ProgramExprAST>(
+        ctx->Ident()->getSymbol()->getText(),
+        this->visitDeclSection(ctx->programBlock()->declSection()),
+        this->visitProgramBlock(ctx->programBlock()->compoundStmt()),
+        )
   }
 
   virtual std::any visitUnit(ObjectPascalParser::UnitContext *ctx) override {
@@ -88,6 +93,10 @@ public:
   }
 
   virtual std::any visitConstantDecl(ObjectPascalParser::ConstantDeclContext *ctx) override {
+    if (ctx->constExpr()->number()) {
+        const d = std::atod(ctx->constExpr()->number()->getText());
+        return std::make_unique<ConstExprAST>(ctx->Ident->getSymbol()->getText(), d, TypeName.Double);
+    }
     return visitChildren(ctx);
   }
 
@@ -367,14 +376,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitConstructorDecl(ObjectPascalParser::ConstructorDeclContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitDestructorDecl(ObjectPascalParser::DestructorDeclContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitFunctionHeading(ObjectPascalParser::FunctionHeadingContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -515,10 +516,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitSubrangeExp(ObjectPascalParser::SubrangeExpContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -532,11 +529,28 @@ public:
   }
 
   virtual std::any visitString(ObjectPascalParser::StringContext *ctx) override {
-    return visitChildren(ctx);
+    // TODO::проверить на ковычки и другие лишние вещи
+    return std::make_unique<StringExprAST>(
+        ctx->StringLiteral->getText(),
+        TypeName.AnsiString,
+    );
   }
 
   virtual std::any visitNumber(ObjectPascalParser::NumberContext *ctx) override {
-    return visitChildren(ctx);
+    const double  d = std::stod(ctx->getText());
+
+    // TODO: проверить определение типов
+    int type = TypeName.Double;
+    if ((d % 1) == 0) {
+        type = TypeName.Integer;
+    }
+    if (d == (short) d) {
+        type = TypeName.SmallInt;
+    }
+    return std::make_unique<NumberExprAST>(
+        d,
+        type,
+    );
   }
 
   virtual std::any visitRadixNumber(ObjectPascalParser::RadixNumberContext *ctx) override {
@@ -612,10 +626,6 @@ public:
   }
 
   virtual std::any visitProtected(ObjectPascalParser::ProtectedContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitIdentDifficlt(ObjectPascalParser::IdentDifficltContext *ctx) override {
     return visitChildren(ctx);
   }
 
