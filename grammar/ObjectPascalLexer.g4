@@ -198,7 +198,7 @@ Ident:
 
 DecimalLiteral: NONZERODIGIT ('\''? DIGIT)*;
 
-OctalLiteral: '0' ('\''? OCTALDIGIT)*;
+OctalLiteral: 'o' ('\''? OCTALDIGIT)*;
 
 HexadecimalLiteral: ('0x' | '0X') HEXADECIMALDIGIT (
 		'\''? HEXADECIMALDIGIT
@@ -291,7 +291,8 @@ IntegerLiteral:
 	DecimalLiteral Integersuffix?
 	| OctalLiteral Integersuffix?
 	| HexadecimalLiteral Integersuffix?
-	| BinaryLiteral Integersuffix?;
+	| BinaryLiteral Integersuffix?
+	| DIGIT;
 
 CharacterLiteral:
 	('u' | 'U' | 'L')? '\'' Cchar+ '\'';
