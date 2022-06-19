@@ -5,8 +5,8 @@
 
 
 #include "antlr4-runtime.h"
-#include "ObjectPascalParserVisitor.h"
-#include "../../ast.h"
+#include "libs/ObjectPascalParserVisitor.h"
+#include "ast.h"
 
 
 /**
