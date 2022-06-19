@@ -5,7 +5,7 @@ const N = 10;
 type
     List = class
     private
-        data: array[1..N] of real;
+        data: array[1 .. N] of real;
 
     public
         size: integer;
@@ -16,7 +16,6 @@ type
         procedure Reverse;
     end;
 
-begin
 constructor List.Create;
 begin
     size := 0;
@@ -79,5 +78,4 @@ begin
     l.Reverse;
     l.Write;
     writeln(l.PopBack, l.size);
-end;
 end.
