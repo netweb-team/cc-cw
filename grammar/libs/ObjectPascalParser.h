@@ -18,39 +18,31 @@ public:
     SINGLE = 19, DOUBLE = 20, EXTENDED = 21, CURRENCY = 22, COMP = 23, SHORTINT = 24, 
     SMALLINT = 25, INTEGER = 26, BYTE = 27, LONGINT = 28, WORD = 29, BOOLEAN = 30, 
     CHAR = 31, WIDECHAR = 32, LONGCHAR = 33, PCHAR = 34, VARIANT = 35, OLEVARIANT = 36, 
-    STRING = 37, ANSISTRING = 38, WIDESTRING = 39, PACKED = 40, ARRAY_1 = 41, 
-    ARRAY_2 = 42, RECORD = 43, CASE = 44, SET = 45, FILE = 46, OBJECT = 47, 
-    VIRTUAL = 48, CONSTRUCTOR = 49, DESTRUCTOR = 50, FINALIZATION = 51, 
-    PUBLIC = 52, PROTECTED_1 = 53, PROTECTED_2 = 54, PRIVATE = 55, PUBLISHED = 56, 
-    PROPERTY_1 = 57, PROPERTY_2 = 58, INDEX = 59, READ = 60, WRITE = 61, 
-    STORED = 62, DEFAULT = 63, NODEFAULT = 64, IMPLEMENTS = 65, VAR_1 = 66, 
-    VAR_2 = 67, ABSOLUTE = 68, ABSTRACT = 69, FUNCTION_1 = 70, FUNCTION_2 = 71, 
-    PROCEDURE_1 = 72, PROCEDURE_2 = 73, OUT = 74, INHERITED = 75, GOTO = 76, 
-    BEGIN_1 = 77, BEGIN_2 = 78, THEN = 79, ELSE = 80, IF_1 = 81, IF_2 = 82, 
-    REPEAT = 83, UNTIL = 84, WHILE = 85, TO = 86, DOWNTO = 87, FOR_1 = 88, 
-    FOR_2 = 89, DO_1 = 90, DO_2 = 91, DO_3 = 92, WITH = 93, TRY = 94, FINALLY = 95, 
-    EXCEPT_1 = 96, EXCEPT_2 = 97, ON = 98, RAISE = 99, AT = 100, IS = 101, 
-    OR = 102, XOR = 103, DIV_LITTLE = 104, MOD = 105, AND_LITTLE = 106, 
-    SHL = 107, SHR = 108, DIV_BIG = 109, AND_BIG = 110, NIL = 111, NOT_1 = 112, 
-    NOT_2 = 113, NOT_3 = 114, TRUE_1 = 115, TRUE_2 = 116, FALSE_1 = 117, 
-    FALSE_2 = 118, UID = 119, NAME = 120, AS_1 = 121, AS_2 = 122, CDECL = 123, 
-    REGISTER = 124, DYNAMIC = 125, EXPORT = 126, EXTERNAL = 127, FAR = 128, 
-    FORWARD = 129, MESSAGE = 130, OVERRIDE_1 = 131, OVERRIDE_2 = 132, OVERLOAD = 133, 
-    PASCAL = 134, REINTRODUCE = 135, SAFECALL = 136, STDCALL = 137, VARARGS = 138, 
-    LOCAL = 139, REAL48 = 140, SEMI = 141, DOT = 142, LEFT_PAREN = 143, 
-    RIGHT_PAREN = 144, LEFT_BRACKET = 145, RIGHT_BRACKET = 146, COMMA = 147, 
-    ASSIGN = 148, COLON = 149, DOT_DOT = 150, CARET = 151, COLON_ASSIGN = 152, 
-    GRATER = 153, LESS = 154, GRATER_EQUAL = 155, LESS_EQUAL = 156, NOT_EQUAL = 157, 
-    PLUS = 158, MINUS = 159, STAR = 160, DIV_ = 161, DOG = 162, SHARP = 163, 
-    LESS_DIV = 164, NEAR = 165, INLINE = 166, ASSEMBLER = 167, PLATFORM = 168, 
-    DEPRECATED = 169, CARDINAL = 170, INT64 = 171, LONGWORD = 172, UNICODESTRING = 173, 
-    QUOTE = 174, E = 175, SINGLE_QUOTE = 176, Ident = 177, DecimalLiteral = 178, 
-    OctalLiteral = 179, HexadecimalLiteral = 180, BinaryLiteral = 181, Integersuffix = 182, 
-    UserDefinedIntegerLiteral = 183, UserDefinedFloatingLiteral = 184, UserDefinedStringLiteral = 185, 
-    UserDefinedCharacterLiteral = 186, Whitespace = 187, Newline = 188, 
-    BlockComment = 189, LineComment = 190, IntegerLiteral = 191, CharacterLiteral = 192, 
-    FloatingLiteral = 193, StringLiteral = 194, BooleanLiteral = 195, UserDefinedLiteral = 196, 
-    MultiLineMacro = 197
+    STRING = 37, ANSISTRING = 38, WIDESTRING = 39, PACKED = 40, ARRAY = 41, 
+    RECORD = 42, CASE = 43, SET = 44, FILE = 45, OBJECT = 46, VIRTUAL = 47, 
+    CONSTRUCTOR = 48, DESTRUCTOR = 49, FINALIZATION = 50, PUBLIC = 51, PROTECTED = 52, 
+    PRIVATE = 53, PUBLISHED = 54, PROPERTY = 55, INDEX = 56, READ = 57, 
+    WRITE = 58, STORED = 59, DEFAULT = 60, NODEFAULT = 61, IMPLEMENTS = 62, 
+    VAR = 63, ABSOLUTE = 64, ABSTRACT = 65, FUNCTION = 66, PROCEDURE = 67, 
+    OUT = 68, INHERITED = 69, GOTO = 70, BEGIN = 71, THEN = 72, ELSE = 73, 
+    IF = 74, REPEAT = 75, UNTIL = 76, WHILE = 77, TO = 78, DOWNTO = 79, 
+    FOR = 80, DO = 81, WITH = 82, TRY = 83, FINALLY = 84, EXCEPT = 85, ON = 86, 
+    RAISE = 87, AT = 88, IS = 89, OR = 90, XOR = 91, DIV = 92, MOD = 93, 
+    AND = 94, SHL = 95, SHR = 96, NIL = 97, NOT = 98, TRUE = 99, FALSE = 100, 
+    UID = 101, NAME = 102, AS = 103, CDECL = 104, REGISTER = 105, DYNAMIC = 106, 
+    EXPORT = 107, EXTERNAL = 108, FAR = 109, FORWARD = 110, MESSAGE = 111, 
+    OVERRIDE = 112, OVERLOAD = 113, PASCAL = 114, REINTRODUCE = 115, SAFECALL = 116, 
+    STDCALL = 117, VARARGS = 118, LOCAL = 119, REAL48 = 120, SEMI = 121, 
+    DOT = 122, DOT_DOT = 123, LEFT_PAREN = 124, RIGHT_PAREN = 125, LEFT_BRACKET = 126, 
+    RIGHT_BRACKET = 127, COMMA = 128, ASSIGN = 129, COLON = 130, CARET = 131, 
+    COLON_ASSIGN = 132, GRATER = 133, LESS = 134, GRATER_EQUAL = 135, LESS_EQUAL = 136, 
+    NOT_EQUAL = 137, PLUS = 138, MINUS = 139, STAR = 140, DIV_ = 141, DOG = 142, 
+    SHARP = 143, LESS_DIV = 144, NEAR = 145, INLINE = 146, ASSEMBLER = 147, 
+    PLATFORM = 148, DEPRECATED = 149, CARDINAL = 150, INT64 = 151, LONGWORD = 152, 
+    UNICODESTRING = 153, QUOTE = 154, E = 155, SINGLE_QUOTE = 156, Identifier = 157, 
+    Integer = 158, IntegerLiteral = 159, OctLiteral = 160, HexLiteral = 161, 
+    Float = 162, Whitespace = 163, Newline = 164, BlockComment = 165, LineComment = 166, 
+    CharacterLiteral = 167, StringLiteral = 168, BooleanLiteral = 169, MultiLineMacro = 170
   };
 
   enum {
@@ -72,30 +64,26 @@ public:
     RuleTerm = 53, RuleFactor = 54, RuleRelOp = 55, RuleAddOp = 56, RuleMulOp = 57, 
     RuleAdditiveOp = 58, RuleDesignator = 59, RuleSetConstructor = 60, RuleSetElement = 61, 
     RuleExprList = 62, RuleStatement = 63, RuleStmtList = 64, RuleSimpleStatement = 65, 
-    RuleStructStmt = 66, RuleBegin = 67, RuleCompoundStmt = 68, RuleConditionalStmt = 69, 
-    RuleProcedureCall = 70, RuleAssignmentStmt = 71, RuleIfStmt = 72, RuleCaseStmt = 73, 
-    RuleCaseSelector = 74, RuleCaseLabel = 75, RuleLoopStmt = 76, RuleRepeatStmt = 77, 
-    RuleWhileStmt = 78, RuleForStmt = 79, RuleWithStmt = 80, RuleTryExceptStmt = 81, 
-    RuleExceptionBlock = 82, RuleTryFinallyStmt = 83, RuleRaiseStmt = 84, 
-    RuleProcedureDeclSection = 85, RuleProcedureDecl = 86, RuleFunctionDecl = 87, 
-    RuleConstructorDecl = 88, RuleDestructorDecl = 89, RuleFunctionHeading = 90, 
-    RuleProcedureHeading = 91, RuleFormalParameters = 92, RuleFormalParm = 93, 
-    RuleParameter = 94, RuleDirective = 95, RuleExternalDirective = 96, 
-    RuleObjectType = 97, RuleObjHeritage = 98, RuleMethodList = 99, RuleMethodHeading = 100, 
-    RuleConstructorHeading = 101, RuleDestructorHeading = 102, RuleObjFieldList = 103, 
-    RuleInitSection = 104, RuleClassType = 105, RuleClassHeritage = 106, 
-    RuleClassVisibility = 107, RuleClassFieldList = 108, RuleClassMethodList = 109, 
-    RuleClassPropertyList = 110, RulePropertyList = 111, RulePropertyInterface = 112, 
-    RulePropertyParameterList = 113, RulePropertySpecifiers = 114, RuleInterfaceType = 115, 
-    RuleInterfaceHeritage = 116, RuleRequiresClause = 117, RuleContainsClause = 118, 
-    RuleIdentList = 119, RuleQualIdList = 120, RuleQualId = 121, RuleTypeId = 122, 
-    RulePredefinedType = 123, RuleCharExpr = 124, RuleSubrangeExp = 125, 
-    RuleConstExpr = 126, RuleUnitId = 127, RuleLabelId = 128, RuleString = 129, 
-    RuleNumber = 130, RuleRadixNumber = 131, RuleHexNumber = 132, RuleOctalNumber = 133, 
-    RuleInteger = 134, RuleSignedInteger = 135, RuleArray = 136, RuleVar = 137, 
-    RuleNot = 138, RuleDiv = 139, RuleAnd = 140, RuleAs = 141, RuleIf = 142, 
-    RuleDo = 143, RuleFor = 144, RuleExcept = 145, RuleFunction = 146, RuleProcedure = 147, 
-    RuleOverride = 148, RuleProtected = 149, RuleIdentDifficlt = 150
+    RuleStructStmt = 66, RuleCompoundStmt = 67, RuleConditionalStmt = 68, 
+    RuleProcedureCall = 69, RuleAssignmentStmt = 70, RuleIfStmt = 71, RuleCaseStmt = 72, 
+    RuleCaseSelector = 73, RuleCaseLabel = 74, RuleLoopStmt = 75, RuleRepeatStmt = 76, 
+    RuleWhileStmt = 77, RuleForStmt = 78, RuleWithStmt = 79, RuleTryExceptStmt = 80, 
+    RuleExceptionBlock = 81, RuleTryFinallyStmt = 82, RuleRaiseStmt = 83, 
+    RuleProcedureDeclSection = 84, RuleProcedureDecl = 85, RuleFunctionDecl = 86, 
+    RuleConstructorDecl = 87, RuleDestructorDecl = 88, RuleFunctionHeading = 89, 
+    RuleProcedureHeading = 90, RuleFormalParameters = 91, RuleFormalParm = 92, 
+    RuleParameter = 93, RuleDirective = 94, RuleExternalDirective = 95, 
+    RuleObjectType = 96, RuleObjHeritage = 97, RuleMethodList = 98, RuleMethodHeading = 99, 
+    RuleConstructorHeading = 100, RuleDestructorHeading = 101, RuleObjFieldList = 102, 
+    RuleInitSection = 103, RuleClassType = 104, RuleClassHeritage = 105, 
+    RuleClassVisibility = 106, RuleClassFieldList = 107, RuleClassMethodList = 108, 
+    RuleClassPropertyList = 109, RulePropertyList = 110, RulePropertyInterface = 111, 
+    RulePropertyParameterList = 112, RulePropertySpecifiers = 113, RuleInterfaceType = 114, 
+    RuleInterfaceHeritage = 115, RuleRequiresClause = 116, RuleContainsClause = 117, 
+    RuleIdentList = 118, RuleQualIdList = 119, RuleQualId = 120, RuleTypeId = 121, 
+    RulePredefinedType = 122, RuleCharExpr = 123, RuleSubrangeExp = 124, 
+    RuleConstExpr = 125, RuleUnitId = 126, RuleLabelId = 127, RuleString = 128, 
+    RuleNumber = 129, RuleSignedInteger = 130
   };
 
   explicit ObjectPascalParser(antlr4::TokenStream *input);
@@ -182,7 +170,6 @@ public:
   class StmtListContext;
   class SimpleStatementContext;
   class StructStmtContext;
-  class BeginContext;
   class CompoundStmtContext;
   class ConditionalStmtContext;
   class ProcedureCallContext;
@@ -246,26 +233,7 @@ public:
   class LabelIdContext;
   class StringContext;
   class NumberContext;
-  class RadixNumberContext;
-  class HexNumberContext;
-  class OctalNumberContext;
-  class IntegerContext;
-  class SignedIntegerContext;
-  class ArrayContext;
-  class VarContext;
-  class NotContext;
-  class DivContext;
-  class AndContext;
-  class AsContext;
-  class IfContext;
-  class DoContext;
-  class ForContext;
-  class ExceptContext;
-  class FunctionContext;
-  class ProcedureContext;
-  class OverrideContext;
-  class ProtectedContext;
-  class IdentDifficltContext; 
+  class SignedIntegerContext; 
 
   class  GoalContext : public antlr4::ParserRuleContext {
   public:
@@ -288,7 +256,7 @@ public:
     ProgramContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *PROGRAM();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *SEMI();
     ProgramBlockContext *programBlock();
     antlr4::tree::TerminalNode *DOT();
@@ -328,7 +296,7 @@ public:
     PackageContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *PACKAGE();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *SEMI();
     antlr4::tree::TerminalNode *END();
     antlr4::tree::TerminalNode *DOT();
@@ -347,7 +315,7 @@ public:
     LibraryContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LIBRARY();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *SEMI();
     ProgramBlockContext *programBlock();
     antlr4::tree::TerminalNode *DOT();
@@ -504,7 +472,7 @@ public:
   public:
     ExportsItemContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *NAME();
     antlr4::tree::TerminalNode *INDEX();
     std::vector<antlr4::tree::TerminalNode *> SINGLE_QUOTE();
@@ -570,11 +538,10 @@ public:
   public:
     ConstantDeclContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *ASSIGN();
     ConstExprContext *constExpr();
     PortabilityDirectiveContext *portabilityDirective();
-    IdentDifficltContext *identDifficlt();
     antlr4::tree::TerminalNode *COLON();
     TypeIdContext *typeId();
     TypedConstantContext *typedConstant();
@@ -607,7 +574,7 @@ public:
   public:
     TypeDeclContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *ASSIGN();
     TypeContext *type();
     antlr4::tree::TerminalNode *TYPE_();
@@ -676,7 +643,7 @@ public:
   public:
     RecordFieldConstantContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *COLON();
     TypedConstantContext *typedConstant();
 
@@ -831,8 +798,8 @@ public:
     antlr4::tree::TerminalNode *DOT_DOT();
     std::vector<ConstExprContext *> constExpr();
     ConstExprContext* constExpr(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> Ident();
-    antlr4::tree::TerminalNode* Ident(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Identifier();
+    antlr4::tree::TerminalNode* Identifier(size_t i);
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -863,7 +830,7 @@ public:
   public:
     EnumeratedTypeElementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *ASSIGN();
     ConstExprContext *constExpr();
 
@@ -915,7 +882,7 @@ public:
   public:
     ArrayTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    ArrayContext *array();
+    antlr4::tree::TerminalNode *ARRAY();
     antlr4::tree::TerminalNode *OF();
     TypeContext *type();
     antlr4::tree::TerminalNode *LEFT_BRACKET();
@@ -991,7 +958,7 @@ public:
     antlr4::tree::TerminalNode *OF();
     std::vector<RecVariantContext *> recVariant();
     RecVariantContext* recVariant(size_t i);
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *COLON();
     std::vector<antlr4::tree::TerminalNode *> SEMI();
     antlr4::tree::TerminalNode* SEMI(size_t i);
@@ -1090,7 +1057,7 @@ public:
   public:
     VarSectionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    VarContext *var();
+    antlr4::tree::TerminalNode *VAR();
     std::vector<VarDeclContext *> varDecl();
     VarDeclContext* varDecl(size_t i);
     std::vector<antlr4::tree::TerminalNode *> SEMI();
@@ -1114,7 +1081,7 @@ public:
     ConstExprContext *constExpr();
     PortabilityDirectiveContext *portabilityDirective();
     antlr4::tree::TerminalNode *ABSOLUTE();
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -1201,7 +1168,7 @@ public:
     StringContext *string();
     antlr4::tree::TerminalNode *NIL();
     ExpressionContext *expression();
-    NotContext *not_();
+    antlr4::tree::TerminalNode *NOT();
     FactorContext *factor();
     SetConstructorContext *setConstructor();
     TypeIdContext *typeId();
@@ -1224,7 +1191,7 @@ public:
     antlr4::tree::TerminalNode *NOT_EQUAL();
     antlr4::tree::TerminalNode *IN();
     antlr4::tree::TerminalNode *IS();
-    AsContext *as();
+    antlr4::tree::TerminalNode *AS();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -1254,10 +1221,9 @@ public:
     MulOpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *STAR();
-    antlr4::tree::TerminalNode *DIV_();
-    DivContext *div();
+    antlr4::tree::TerminalNode *DIV();
     antlr4::tree::TerminalNode *MOD();
-    AndContext *and_();
+    antlr4::tree::TerminalNode *AND();
     antlr4::tree::TerminalNode *SHL();
     antlr4::tree::TerminalNode *SHR();
 
@@ -1290,8 +1256,8 @@ public:
     QualIdContext *qualId();
     std::vector<antlr4::tree::TerminalNode *> DOT();
     antlr4::tree::TerminalNode* DOT(size_t i);
-    std::vector<IdentDifficltContext *> identDifficlt();
-    IdentDifficltContext* identDifficlt(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Identifier();
+    antlr4::tree::TerminalNode* Identifier(size_t i);
     std::vector<antlr4::tree::TerminalNode *> LEFT_BRACKET();
     antlr4::tree::TerminalNode* LEFT_BRACKET(size_t i);
     std::vector<ExprListContext *> exprList();
@@ -1425,25 +1391,11 @@ public:
 
   StructStmtContext* structStmt();
 
-  class  BeginContext : public antlr4::ParserRuleContext {
-  public:
-    BeginContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *BEGIN_1();
-    antlr4::tree::TerminalNode *BEGIN_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  BeginContext* begin();
-
   class  CompoundStmtContext : public antlr4::ParserRuleContext {
   public:
     CompoundStmtContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    BeginContext *begin();
+    antlr4::tree::TerminalNode *BEGIN();
     StmtListContext *stmtList();
     antlr4::tree::TerminalNode *END();
     antlr4::tree::TerminalNode *SEMI();
@@ -1504,7 +1456,7 @@ public:
   public:
     IfStmtContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    IfContext *if_();
+    antlr4::tree::TerminalNode *IF();
     ExpressionContext *expression();
     antlr4::tree::TerminalNode *THEN();
     std::vector<StatementContext *> statement();
@@ -1611,7 +1563,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *WHILE();
     ExpressionContext *expression();
-    DoContext *do_();
+    antlr4::tree::TerminalNode *DO();
     StatementContext *statement();
 
 
@@ -1625,12 +1577,12 @@ public:
   public:
     ForStmtContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    ForContext *for_();
+    antlr4::tree::TerminalNode *FOR();
     QualIdContext *qualId();
     antlr4::tree::TerminalNode *COLON_ASSIGN();
     std::vector<ExpressionContext *> expression();
     ExpressionContext* expression(size_t i);
-    DoContext *do_();
+    antlr4::tree::TerminalNode *DO();
     StatementContext *statement();
     antlr4::tree::TerminalNode *TO();
     antlr4::tree::TerminalNode *DOWNTO();
@@ -1648,7 +1600,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *WITH();
     QualIdListContext *qualIdList();
-    DoContext *do_();
+    antlr4::tree::TerminalNode *DO();
     StatementContext *statement();
 
 
@@ -1665,7 +1617,7 @@ public:
     antlr4::tree::TerminalNode *TRY();
     std::vector<StatementContext *> statement();
     StatementContext* statement(size_t i);
-    ExceptContext *except();
+    antlr4::tree::TerminalNode *EXCEPT();
     ExceptionBlockContext *exceptionBlock();
     antlr4::tree::TerminalNode *END();
     std::vector<antlr4::tree::TerminalNode *> SEMI();
@@ -1686,13 +1638,13 @@ public:
     antlr4::tree::TerminalNode* ON(size_t i);
     std::vector<TypeIdContext *> typeId();
     TypeIdContext* typeId(size_t i);
-    std::vector<DoContext *> do_();
-    DoContext* do_(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> DO();
+    antlr4::tree::TerminalNode* DO(size_t i);
     std::vector<StatementContext *> statement();
     StatementContext* statement(size_t i);
     antlr4::tree::TerminalNode *ELSE();
-    std::vector<antlr4::tree::TerminalNode *> Ident();
-    antlr4::tree::TerminalNode* Ident(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Identifier();
+    antlr4::tree::TerminalNode* Identifier(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COLON();
     antlr4::tree::TerminalNode* COLON(size_t i);
     std::vector<antlr4::tree::TerminalNode *> SEMI();
@@ -1728,8 +1680,8 @@ public:
     RaiseStmtContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *RAISE();
-    std::vector<antlr4::tree::TerminalNode *> Ident();
-    antlr4::tree::TerminalNode* Ident(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Identifier();
+    antlr4::tree::TerminalNode* Identifier(size_t i);
     antlr4::tree::TerminalNode *AT();
 
 
@@ -1831,8 +1783,8 @@ public:
   public:
     FunctionHeadingContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    FunctionContext *function();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *FUNCTION();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *COLON();
     SimpleTypeContext *simpleType();
     antlr4::tree::TerminalNode *STRING();
@@ -1849,8 +1801,8 @@ public:
   public:
     ProcedureHeadingContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    ProcedureContext *procedure();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *PROCEDURE();
+    antlr4::tree::TerminalNode *Identifier();
     FormalParametersContext *formalParameters();
 
 
@@ -1883,7 +1835,7 @@ public:
     FormalParmContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     ParameterContext *parameter();
-    VarContext *var();
+    antlr4::tree::TerminalNode *VAR();
     antlr4::tree::TerminalNode *CONST();
     antlr4::tree::TerminalNode *OUT();
 
@@ -1903,9 +1855,9 @@ public:
     SimpleTypeContext *simpleType();
     antlr4::tree::TerminalNode *STRING();
     antlr4::tree::TerminalNode *FILE();
-    ArrayContext *array();
+    antlr4::tree::TerminalNode *ARRAY();
     antlr4::tree::TerminalNode *OF();
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *ASSIGN();
     ConstExprContext *constExpr();
 
@@ -1933,7 +1885,7 @@ public:
     antlr4::tree::TerminalNode *ASSEMBLER();
     antlr4::tree::TerminalNode *MESSAGE();
     ConstExprContext *constExpr();
-    OverrideContext *override();
+    antlr4::tree::TerminalNode *OVERRIDE();
     antlr4::tree::TerminalNode *OVERLOAD();
     antlr4::tree::TerminalNode *PASCAL();
     antlr4::tree::TerminalNode *REINTRODUCE();
@@ -1957,8 +1909,8 @@ public:
     antlr4::tree::TerminalNode *EXTERNAL();
     StringContext *string();
     antlr4::tree::TerminalNode *NAME();
-    std::vector<antlr4::tree::TerminalNode *> Ident();
-    antlr4::tree::TerminalNode* Ident(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Identifier();
+    antlr4::tree::TerminalNode* Identifier(size_t i);
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -2041,7 +1993,7 @@ public:
     ConstructorHeadingContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *CONSTRUCTOR();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     FormalParametersContext *formalParameters();
 
 
@@ -2056,7 +2008,7 @@ public:
     DestructorHeadingContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DESTRUCTOR();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     FormalParametersContext *formalParameters();
 
 
@@ -2091,7 +2043,7 @@ public:
     StmtListContext* stmtList(size_t i);
     antlr4::tree::TerminalNode *END();
     antlr4::tree::TerminalNode *FINALIZATION();
-    BeginContext *begin();
+    antlr4::tree::TerminalNode *BEGIN();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -2141,7 +2093,7 @@ public:
     ClassVisibilityContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *PUBLIC();
-    ProtectedContext *protected_();
+    antlr4::tree::TerminalNode *PROTECTED();
     antlr4::tree::TerminalNode *PRIVATE();
     antlr4::tree::TerminalNode *PUBLISHED();
 
@@ -2201,8 +2153,8 @@ public:
   public:
     PropertyListContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *PROPERTY_1();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *PROPERTY();
+    antlr4::tree::TerminalNode *Identifier();
     PropertyInterfaceContext *propertyInterface();
     PropertySpecifiersContext *propertySpecifiers();
     PortabilityDirectiveContext *portabilityDirective();
@@ -2219,7 +2171,7 @@ public:
     PropertyInterfaceContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *COLON();
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
     PropertyParameterListContext *propertyParameterList();
 
 
@@ -2255,7 +2207,7 @@ public:
     antlr4::tree::TerminalNode *INDEX();
     ConstExprContext *constExpr();
     antlr4::tree::TerminalNode *READ();
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *WRITE();
     antlr4::tree::TerminalNode *STORED();
     antlr4::tree::TerminalNode *NODEFAULT();
@@ -2292,7 +2244,7 @@ public:
     InterfaceHeritageContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *LEFT_PAREN();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *RIGHT_PAREN();
 
 
@@ -2338,8 +2290,8 @@ public:
   public:
     IdentListContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<IdentDifficltContext *> identDifficlt();
-    IdentDifficltContext* identDifficlt(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Identifier();
+    antlr4::tree::TerminalNode* Identifier(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMMA();
     antlr4::tree::TerminalNode* COMMA(size_t i);
 
@@ -2372,7 +2324,7 @@ public:
     virtual size_t getRuleIndex() const override;
     UnitIdContext *unitId();
     antlr4::tree::TerminalNode *DOT();
-    IdentDifficltContext *identDifficlt();
+    antlr4::tree::TerminalNode *Identifier();
     std::vector<antlr4::tree::TerminalNode *> CARET();
     antlr4::tree::TerminalNode* CARET(size_t i);
 
@@ -2387,7 +2339,7 @@ public:
   public:
     TypeIdContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *Ident();
+    antlr4::tree::TerminalNode *Identifier();
     UnitIdContext *unitId();
     antlr4::tree::TerminalNode *DOT();
 
@@ -2432,8 +2384,8 @@ public:
   public:
     SubrangeExpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    IdentDifficltContext *identDifficlt();
-    IntegerContext *integer();
+    antlr4::tree::TerminalNode *Identifier();
+    antlr4::tree::TerminalNode *IntegerLiteral();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -2449,8 +2401,8 @@ public:
     NumberContext *number();
     StringContext *string();
     CharExprContext *charExpr();
-    std::vector<IntegerContext *> integer();
-    IntegerContext* integer(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> IntegerLiteral();
+    antlr4::tree::TerminalNode* IntegerLiteral(size_t i);
     AdditiveOpContext *additiveOp();
 
 
@@ -2464,8 +2416,8 @@ public:
   public:
     UnitIdContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<IdentDifficltContext *> identDifficlt();
-    IdentDifficltContext* identDifficlt(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Identifier();
+    antlr4::tree::TerminalNode* Identifier(size_t i);
     antlr4::tree::TerminalNode *DOT();
 
 
@@ -2479,8 +2431,8 @@ public:
   public:
     LabelIdContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    IdentDifficltContext *identDifficlt();
-    IntegerContext *integer();
+    antlr4::tree::TerminalNode *Identifier();
+    antlr4::tree::TerminalNode *IntegerLiteral();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -2506,9 +2458,8 @@ public:
   public:
     NumberContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *IntegerLiteral();
-    antlr4::tree::TerminalNode *FloatingLiteral();
-    antlr4::tree::TerminalNode *DecimalLiteral();
+    antlr4::tree::TerminalNode *Integer();
+    antlr4::tree::TerminalNode *Float();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -2517,64 +2468,11 @@ public:
 
   NumberContext* number();
 
-  class  RadixNumberContext : public antlr4::ParserRuleContext {
-  public:
-    RadixNumberContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    HexNumberContext *hexNumber();
-    OctalNumberContext *octalNumber();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  RadixNumberContext* radixNumber();
-
-  class  HexNumberContext : public antlr4::ParserRuleContext {
-  public:
-    HexNumberContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *HexadecimalLiteral();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  HexNumberContext* hexNumber();
-
-  class  OctalNumberContext : public antlr4::ParserRuleContext {
-  public:
-    OctalNumberContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *OctalLiteral();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  OctalNumberContext* octalNumber();
-
-  class  IntegerContext : public antlr4::ParserRuleContext {
-  public:
-    IntegerContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *UserDefinedIntegerLiteral();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  IntegerContext* integer();
-
   class  SignedIntegerContext : public antlr4::ParserRuleContext {
   public:
     SignedIntegerContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    IntegerContext *integer();
+    antlr4::tree::TerminalNode *IntegerLiteral();
     antlr4::tree::TerminalNode *PLUS();
     antlr4::tree::TerminalNode *MINUS();
 
@@ -2584,220 +2482,6 @@ public:
   };
 
   SignedIntegerContext* signedInteger();
-
-  class  ArrayContext : public antlr4::ParserRuleContext {
-  public:
-    ArrayContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *ARRAY_1();
-    antlr4::tree::TerminalNode *ARRAY_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  ArrayContext* array();
-
-  class  VarContext : public antlr4::ParserRuleContext {
-  public:
-    VarContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *VAR_1();
-    antlr4::tree::TerminalNode *VAR_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  VarContext* var();
-
-  class  NotContext : public antlr4::ParserRuleContext {
-  public:
-    NotContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *NOT_1();
-    antlr4::tree::TerminalNode *NOT_2();
-    antlr4::tree::TerminalNode *NOT_3();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  NotContext* not_();
-
-  class  DivContext : public antlr4::ParserRuleContext {
-  public:
-    DivContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *DIV_BIG();
-    antlr4::tree::TerminalNode *DIV_LITTLE();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  DivContext* div();
-
-  class  AndContext : public antlr4::ParserRuleContext {
-  public:
-    AndContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *AND_BIG();
-    antlr4::tree::TerminalNode *AND_LITTLE();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  AndContext* and_();
-
-  class  AsContext : public antlr4::ParserRuleContext {
-  public:
-    AsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *AS_1();
-    antlr4::tree::TerminalNode *AS_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  AsContext* as();
-
-  class  IfContext : public antlr4::ParserRuleContext {
-  public:
-    IfContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *IF_1();
-    antlr4::tree::TerminalNode *IF_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  IfContext* if_();
-
-  class  DoContext : public antlr4::ParserRuleContext {
-  public:
-    DoContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *DO_1();
-    antlr4::tree::TerminalNode *DO_2();
-    antlr4::tree::TerminalNode *DO_3();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  DoContext* do_();
-
-  class  ForContext : public antlr4::ParserRuleContext {
-  public:
-    ForContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *FOR_1();
-    antlr4::tree::TerminalNode *FOR_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  ForContext* for_();
-
-  class  ExceptContext : public antlr4::ParserRuleContext {
-  public:
-    ExceptContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *EXCEPT_1();
-    antlr4::tree::TerminalNode *EXCEPT_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  ExceptContext* except();
-
-  class  FunctionContext : public antlr4::ParserRuleContext {
-  public:
-    FunctionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *FUNCTION_1();
-    antlr4::tree::TerminalNode *FUNCTION_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  FunctionContext* function();
-
-  class  ProcedureContext : public antlr4::ParserRuleContext {
-  public:
-    ProcedureContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *PROCEDURE_1();
-    antlr4::tree::TerminalNode *PROCEDURE_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  ProcedureContext* procedure();
-
-  class  OverrideContext : public antlr4::ParserRuleContext {
-  public:
-    OverrideContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *OVERRIDE_1();
-    antlr4::tree::TerminalNode *OVERRIDE_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  OverrideContext* override();
-
-  class  ProtectedContext : public antlr4::ParserRuleContext {
-  public:
-    ProtectedContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *PROTECTED_1();
-    antlr4::tree::TerminalNode *PROTECTED_2();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  ProtectedContext* protected_();
-
-  class  IdentDifficltContext : public antlr4::ParserRuleContext {
-  public:
-    IdentDifficltContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    std::vector<antlr4::tree::TerminalNode *> Ident();
-    antlr4::tree::TerminalNode* Ident(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> DOT();
-    antlr4::tree::TerminalNode* DOT(size_t i);
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  IdentDifficltContext* identDifficlt();
 
 
   // By default the static state used to implement the parser is lazily initialized during the first
