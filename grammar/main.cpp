@@ -11,26 +11,23 @@ using namespace std;
 using namespace antlr4;
 int main(int argc, const char* argv[]) {
     std::ifstream stream;
-    stream.open("input.scene");
+    stream.open(argv[1]);
     
     ANTLRInputStream input(stream);
-    std::cout << "Hello"<< endl;
-    
-    //antlr4::ANTLRInputStream input("6*(2+3)");
-
     cout << "input stream created" << endl; 
+
     ObjectPascalLexer lexer(&input);
     cout << "lexer created" << endl; 
+
     CommonTokenStream tokens(&lexer);
     cout << tokens.getText() << endl;
     for (int i = 0; i < tokens.getTokens().size(); i++) {
         cout << tokens.getTokens()[i]->getText() << endl;
     }
 
-    cout << "common token created" << endl; 
-    ObjectPascalParser parser(&tokens);  
-    
+    ObjectPascalParser parser(&tokens);      
     cout << "parser created" << endl;   
+    
     ObjectPascalParser::GoalContext* tree = parser.goal();
     ObjectPascalParserBaseVisitor visitor;
     cout << tree->toStringTree(true) << endl;
