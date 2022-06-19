@@ -1,7 +1,5 @@
 lexer grammar ObjectPascalLexer;
 
-
-DOT_DOT: '..';
 PROGRAM: 'program'; 
 PACKAGE: 'package';
 END: 'end';
@@ -42,8 +40,7 @@ STRING: 'string';
 ANSISTRING: 'ansistring';
 WIDESTRING: 'widestring';
 PACKED: 'packed';
-ARRAY_1: 'array';
-ARRAY_2: 'Array';
+ARRAY: 'array';
 RECORD: 'record';
 CASE: 'case';
 SET: 'set';
@@ -54,12 +51,10 @@ CONSTRUCTOR: 'constructor';
 DESTRUCTOR: 'destructor';
 FINALIZATION: 'finalization'; 
 PUBLIC: 'public';
-PROTECTED_1: 'protected';
-PROTECTED_2: 'Protected';
+PROTECTED: 'protected';
 PRIVATE: 'private';
 PUBLISHED: 'published';
-PROPERTY_1: 'property';
-PROPERTY_2: 'Property';
+PROPERTY: 'property';
 INDEX: 'index';
 READ: 'read';
 WRITE: 'write';
@@ -67,63 +62,47 @@ STORED: 'stored';
 DEFAULT: 'default';
 NODEFAULT: 'nodefault';
 IMPLEMENTS: 'implements'; 
-VAR_1: 'var';
-VAR_2: 'Var';
+VAR: 'var';
 ABSOLUTE: 'absolute';
 ABSTRACT: 'absctuct';
-FUNCTION_1: 'function';
-FUNCTION_2: 'Function';
-PROCEDURE_1: 'procedure';
-PROCEDURE_2: 'Procedure';
+FUNCTION: 'function';
+PROCEDURE: 'procedure';
 OUT: 'out';
 INHERITED: 'inherited';
 GOTO: 'goto';
-BEGIN_1: 'begin';
-BEGIN_2: 'Begin';
+BEGIN: 'begin';
 THEN: 'then';
 ELSE: 'else';
-IF_1: 'if';
-IF_2: 'If';
+IF: 'if';
 REPEAT: 'repeat';
 UNTIL: 'until';
 WHILE: 'while';
 TO: 'to';
 DOWNTO: 'downto';
-FOR_1: 'for';
-FOR_2: 'For';
-DO_1: 'do';
-DO_2: 'Do';
-DO_3: 'DO';
+FOR: 'for';
+DO: 'do';
 WITH: 'with';
 TRY: 'try';
 FINALLY: 'finally';
-EXCEPT_1: 'except';
-EXCEPT_2: 'Except';
+EXCEPT: 'except';
 ON: 'on';
 RAISE: 'raise';
 AT: 'at';
 IS: 'is';
 OR: 'or';
 XOR: 'xor';
-DIV_LITTLE: 'div';
+DIV: 'div';
 MOD: 'mod';
-AND_LITTLE: 'and' ;
+AND: 'and';
 SHL: 'shl';
 SHR: 'shr';
-DIV_BIG: 'DIV';
-AND_BIG: 'AND';
 NIL: 'nil';
-NOT_1: 'not';
-NOT_2: 'Not';
-NOT_3: 'NOT';
-TRUE_1: 'true';
-TRUE_2: 'True';
-FALSE_1: 'false';
-FALSE_2: 'False'; 
+NOT: 'not';
+TRUE: 'true';
+FALSE: 'false';
 UID: 'UID';
 NAME: 'NAME';
-AS_1: 'as';
-AS_2: 'As';
+AS: 'as';
 CDECL: 'cdecl';
 REGISTER: 'register';
 DYNAMIC: 'dynamic';
@@ -132,8 +111,7 @@ EXTERNAL: 'external';
 FAR: 'far';
 FORWARD: 'forward';
 MESSAGE: 'message';
-OVERRIDE_1: 'override';
-OVERRIDE_2: 'Override';
+OVERRIDE: 'override';
 OVERLOAD: 'overload';
 PASCAL: 'pascal';
 REINTRODUCE: 'reintroduce';
@@ -145,6 +123,7 @@ REAL48: 'real48';
 
 SEMI: ';';
 DOT: '.';
+DOT_DOT: '..';
 LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
 LEFT_BRACKET: '[';
@@ -185,38 +164,29 @@ fragment LOWERCASE: [a-z];
 
 fragment DIGIT: [0-9];
 
-fragment NONZERODIGIT: [1-9];
-
 fragment OCTALDIGIT: [0-7];
 
 fragment HEXADECIMALDIGIT: [0-9a-fA-F];
 
 fragment BINARYDIGIT: [01];
 
-Ident:
-     NONDIGIT (NONDIGIT | DIGIT)*;
+fragment IDENT: NONDIGIT (NONDIGIT | DIGIT)*;
 
-DecimalLiteral: NONZERODIGIT ('\''? DIGIT)*;
+Identifier: IDENT (DOT IDENT)*;
 
-OctalLiteral: 'o' ('\''? OCTALDIGIT)*;
+Integer: IntegerLiteral | OctLiteral | HexLiteral;
 
-HexadecimalLiteral: ('0x' | '0X') HEXADECIMALDIGIT (
-		'\''? HEXADECIMALDIGIT
-	)*;
+IntegerLiteral: (DIGIT)+;
 
-BinaryLiteral: ('0b' | '0B') BINARYDIGIT ('\''? BINARYDIGIT)*;
+OctLiteral: '&' (OCTALDIGIT)+;
 
-Integersuffix:
-	Unsignedsuffix Longsuffix?
-	| Unsignedsuffix Longlongsuffix?
-	| Longsuffix Unsignedsuffix?
-	| Longlongsuffix Unsignedsuffix?;
+HexLiteral: '$' (HEXADECIMALDIGIT)+;
 
-fragment Unsignedsuffix: [uU];
+//BinaryLiteral: ('0b' | '0B') (BINARYDIGIT)+;
 
-fragment Longsuffix: [lL];
+Float: (DIGIT)+ ((DOT (DIGIT)+ (Exponentpart)?)? | Exponentpart);
 
-fragment Longlongsuffix: 'll' | 'LL';
+fragment SIGN: [+-];
 
 fragment Cchar:
 	~ ['\\\r\n]
@@ -226,6 +196,7 @@ fragment Escapesequence:
 	Simpleescapesequence
 	| Octalescapesequence
 	| Hexadecimalescapesequence;
+
 fragment Simpleescapesequence:
 	'\\\''
 	| '\\"'
@@ -247,17 +218,7 @@ fragment Octalescapesequence:
 
 fragment Hexadecimalescapesequence: '\\x' HEXADECIMALDIGIT+;
 
-fragment Fractionalconstant:
-	Digitsequence? '.' Digitsequence
-	| Digitsequence '.';
-
-fragment Exponentpart:
-	'e' SIGN? Digitsequence
-	| 'E' SIGN? Digitsequence;
-
-fragment SIGN: [+-];
-
-fragment Digitsequence: DIGIT ('\''? DIGIT)*;
+fragment Exponentpart: 'e' SIGN? (DIGIT)*;
 
 fragment Floatingsuffix: [flFL];
 
@@ -268,55 +229,22 @@ fragment Schar:
 	| Escapesequence;
 
 fragment Rawstring: 'R"' (( '\\' ["()] )|~[\r\n (])*? '(' ~[)]*? ')'  (( '\\' ["()]) | ~[\r\n "])*? '"';
-UserDefinedIntegerLiteral:
-	DecimalLiteral Udsuffix
-	| OctalLiteral Udsuffix
-	| HexadecimalLiteral Udsuffix
-	| BinaryLiteral Udsuffix;
-UserDefinedFloatingLiteral:
-	Fractionalconstant Exponentpart? Udsuffix
-	| Digitsequence Exponentpart Udsuffix;
-UserDefinedStringLiteral: StringLiteral Udsuffix;
-UserDefinedCharacterLiteral: CharacterLiteral Udsuffix;
-
-fragment Udsuffix: Ident;
 
 Whitespace: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n') -> skip;
 BlockComment: '/*' .*? '*/' -> skip;
 LineComment: '//' ~ [\r\n]* -> skip;
 
-
-IntegerLiteral:
-	DecimalLiteral Integersuffix?
-	| OctalLiteral Integersuffix?
-	| HexadecimalLiteral Integersuffix?
-	| BinaryLiteral Integersuffix?
-	| DIGIT;
-
 CharacterLiteral:
 	('u' | 'U' | 'L')? '\'' Cchar+ '\'';
-
-FloatingLiteral:
-	Fractionalconstant Exponentpart? Floatingsuffix?
-	| Digitsequence Exponentpart Floatingsuffix?;
 
 StringLiteral:
 	Encodingprefix?
     (Rawstring
 	|'"' Schar* '"');
 
-BooleanLiteral: FALSE_1 | FALSE_2 | TRUE_1 | TRUE_2;
-
-
-UserDefinedLiteral:
-	UserDefinedIntegerLiteral
-	| UserDefinedFloatingLiteral
-	| UserDefinedStringLiteral
-	| UserDefinedCharacterLiteral;
+BooleanLiteral: FALSE | TRUE;
 
 MultiLineMacro:
 	'#' (~[\n]*? '\\' '\r'? '\n')+ ~ [\n]+ -> channel (HIDDEN);
-
-
 
