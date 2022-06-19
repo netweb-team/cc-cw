@@ -30,31 +30,34 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 
 # set variable pointing to the antlr tool that supports C++
 # this is not required if the jar file can be found under PATH environment
-set(ANTLR_EXECUTABLE /mnt/c/Javalib/antlr-4.10.1-complete.jar)
+#set(ANTLR_EXECUTABLE /mnt/c/Javalib/antlr-4.10.1-complete.jar)
+set(ANTLR_EXECUTABLE /usr/local/lib/antlr-4.10.1-complete.jar)
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # Call macro to add lexer and grammar to your build dependencies.
-antlr_target(ObjectPascalLexer ObjectPascalLexer.g4 LEXER
-             PACKAGE antlrcpptest)
-antlr_target(ObjectPascalParser ObjectPascalParser.g4 PARSER
-             PACKAGE antlrcpptest
-             DEPENDS_ANTLR ObjectPascalLexer
-             COMPILE_FLAGS -lib ${ANTLR_ObjectPascalLexer_OUTPUT_DIR})
+# antlr_target(ObjectPascalLexer ObjectPascalLexer.g4 LEXER
+#              PACKAGE antlrcpptest)
+# antlr_target(ObjectPascalParser ObjectPascalParser.g4 PARSER
+#              PACKAGE antlrcpptest
+#              DEPENDS_ANTLR ObjectPascalLexer
+#              COMPILE_FLAGS -lib ${ANTLR_ObjectPascalLexer_OUTPUT_DIR})
 
 # include generated files in project environment
-include_directories(${ANTLR_ObjectPascalLexer_OUTPUT_DIR})
-include_directories(${ANTLR_ObjectPascalParser_OUTPUT_DIR})
+# include_directories(${ANTLR_ObjectPascalLexer_OUTPUT_DIR})
+# include_directories(${ANTLR_ObjectPascalParser_OUTPUT_DIR})
 
 
 project(compiler)
 find_package(Threads REQUIRED)
 # add generated grammar to demo binary target
-add_executable(${PROJECT_NAME} main.cpp libs/ObjectPascalLexer.cpp libs/ObjectPascalParser.cpp
-               ${ANTLR_ObjectPascalLexer_CXX_OUTPUTS}
-               ${ANTLR_ObjectPascalParser_CXX_OUTPUTS} )
+add_executable(${PROJECT_NAME} main.cpp 
+               libs/ObjectPascalLexer.cpp libs/ObjectPascalParser.cpp
+               # ${ANTLR_ObjectPascalLexer_CXX_OUTPUTS}
+               # ${ANTLR_ObjectPascalParser_CXX_OUTPUTS}
+)
 target_link_libraries(${PROJECT_NAME} antlr4_static pthread Threads::Threads)
 
 
