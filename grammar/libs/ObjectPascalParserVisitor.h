@@ -29,8 +29,6 @@ public:
 
     virtual std::any visitLibrary(ObjectPascalParser::LibraryContext *context) = 0;
 
-    virtual std::any visitProgramBlock(ObjectPascalParser::ProgramBlockContext *context) = 0;
-
     virtual std::any visitUsesClause(ObjectPascalParser::UsesClauseContext *context) = 0;
 
     virtual std::any visitPortabilityDirective(ObjectPascalParser::PortabilityDirectiveContext *context) = 0;
@@ -267,10 +265,6 @@ public:
 
     virtual std::any visitCharExpr(ObjectPascalParser::CharExprContext *context) = 0;
 
-    virtual std::any visitSubrangeExp(ObjectPascalParser::SubrangeExpContext *context) = 0;
-
-    virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *context) = 0;
-
     virtual std::any visitUnitId(ObjectPascalParser::UnitIdContext *context) = 0;
 
     virtual std::any visitLabelId(ObjectPascalParser::LabelIdContext *context) = 0;
@@ -279,7 +273,7 @@ public:
 
     virtual std::any visitNumber(ObjectPascalParser::NumberContext *context) = 0;
 
-    virtual std::any visitSignedInteger(ObjectPascalParser::SignedIntegerContext *context) = 0;
+    virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *context) = 0;
 
 
 };

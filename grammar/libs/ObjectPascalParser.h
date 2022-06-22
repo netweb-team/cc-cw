@@ -47,43 +47,42 @@ public:
 
   enum {
     RuleGoal = 0, RuleProgram = 1, RuleUnit = 2, RulePackage = 3, RuleLibrary = 4, 
-    RuleProgramBlock = 5, RuleUsesClause = 6, RulePortabilityDirective = 7, 
-    RuleInterfaceSection = 8, RuleInterfaceDecl = 9, RuleExportedHeading = 10, 
-    RuleImplementationSection = 11, RuleBlock = 12, RuleExportsStmt = 13, 
-    RuleExportsItem = 14, RuleDeclSection = 15, RuleLabelDeclSection = 16, 
-    RuleConstSection = 17, RuleConstantDecl = 18, RuleTypeSection = 19, 
-    RuleTypeDecl = 20, RuleTypedConstant = 21, RuleArrayConstant = 22, RuleRecordConstant = 23, 
-    RuleRecordFieldConstant = 24, RuleType = 25, RuleRestrictedType = 26, 
-    RuleClassRefType = 27, RuleSimpleType = 28, RuleRealType = 29, RuleOrdinalType = 30, 
-    RuleOrdIdent = 31, RuleVariantType = 32, RuleSubrangeType = 33, RuleEnumeratedType = 34, 
-    RuleEnumeratedTypeElement = 35, RuleStringType = 36, RuleStrucType = 37, 
-    RuleArrayType = 38, RuleRecType = 39, RuleFieldList = 40, RuleFieldDecl = 41, 
-    RuleVariantSection = 42, RuleRecVariant = 43, RuleSetType = 44, RuleFileType = 45, 
-    RulePointerType = 46, RuleProcedureType = 47, RuleVarSection = 48, RuleVarDecl = 49, 
-    RuleExpression = 50, RuleSimpleGrouped = 51, RuleSimpleExpression = 52, 
-    RuleTerm = 53, RuleFactor = 54, RuleRelOp = 55, RuleAddOp = 56, RuleMulOp = 57, 
-    RuleAdditiveOp = 58, RuleDesignator = 59, RuleSetConstructor = 60, RuleSetElement = 61, 
-    RuleExprList = 62, RuleStatement = 63, RuleStmtList = 64, RuleSimpleStatement = 65, 
-    RuleStructStmt = 66, RuleCompoundStmt = 67, RuleConditionalStmt = 68, 
-    RuleProcedureCall = 69, RuleAssignmentStmt = 70, RuleIfStmt = 71, RuleCaseStmt = 72, 
-    RuleCaseSelector = 73, RuleCaseLabel = 74, RuleLoopStmt = 75, RuleRepeatStmt = 76, 
-    RuleWhileStmt = 77, RuleForStmt = 78, RuleWithStmt = 79, RuleTryExceptStmt = 80, 
-    RuleExceptionBlock = 81, RuleTryFinallyStmt = 82, RuleRaiseStmt = 83, 
-    RuleProcedureDeclSection = 84, RuleProcedureDecl = 85, RuleFunctionDecl = 86, 
-    RuleConstructorDecl = 87, RuleDestructorDecl = 88, RuleFunctionHeading = 89, 
-    RuleProcedureHeading = 90, RuleFormalParameters = 91, RuleFormalParm = 92, 
-    RuleParameter = 93, RuleDirective = 94, RuleExternalDirective = 95, 
-    RuleObjectType = 96, RuleObjHeritage = 97, RuleMethodList = 98, RuleMethodHeading = 99, 
-    RuleConstructorHeading = 100, RuleDestructorHeading = 101, RuleObjFieldList = 102, 
-    RuleInitSection = 103, RuleClassType = 104, RuleClassHeritage = 105, 
-    RuleClassVisibility = 106, RuleClassFieldList = 107, RuleClassMethodList = 108, 
-    RuleClassPropertyList = 109, RulePropertyList = 110, RulePropertyInterface = 111, 
-    RulePropertyParameterList = 112, RulePropertySpecifiers = 113, RuleInterfaceType = 114, 
-    RuleInterfaceHeritage = 115, RuleRequiresClause = 116, RuleContainsClause = 117, 
-    RuleIdentList = 118, RuleQualIdList = 119, RuleQualId = 120, RuleTypeId = 121, 
-    RulePredefinedType = 122, RuleCharExpr = 123, RuleSubrangeExp = 124, 
-    RuleConstExpr = 125, RuleUnitId = 126, RuleLabelId = 127, RuleString = 128, 
-    RuleNumber = 129, RuleSignedInteger = 130
+    RuleUsesClause = 5, RulePortabilityDirective = 6, RuleInterfaceSection = 7, 
+    RuleInterfaceDecl = 8, RuleExportedHeading = 9, RuleImplementationSection = 10, 
+    RuleBlock = 11, RuleExportsStmt = 12, RuleExportsItem = 13, RuleDeclSection = 14, 
+    RuleLabelDeclSection = 15, RuleConstSection = 16, RuleConstantDecl = 17, 
+    RuleTypeSection = 18, RuleTypeDecl = 19, RuleTypedConstant = 20, RuleArrayConstant = 21, 
+    RuleRecordConstant = 22, RuleRecordFieldConstant = 23, RuleType = 24, 
+    RuleRestrictedType = 25, RuleClassRefType = 26, RuleSimpleType = 27, 
+    RuleRealType = 28, RuleOrdinalType = 29, RuleOrdIdent = 30, RuleVariantType = 31, 
+    RuleSubrangeType = 32, RuleEnumeratedType = 33, RuleEnumeratedTypeElement = 34, 
+    RuleStringType = 35, RuleStrucType = 36, RuleArrayType = 37, RuleRecType = 38, 
+    RuleFieldList = 39, RuleFieldDecl = 40, RuleVariantSection = 41, RuleRecVariant = 42, 
+    RuleSetType = 43, RuleFileType = 44, RulePointerType = 45, RuleProcedureType = 46, 
+    RuleVarSection = 47, RuleVarDecl = 48, RuleExpression = 49, RuleSimpleGrouped = 50, 
+    RuleSimpleExpression = 51, RuleTerm = 52, RuleFactor = 53, RuleRelOp = 54, 
+    RuleAddOp = 55, RuleMulOp = 56, RuleAdditiveOp = 57, RuleDesignator = 58, 
+    RuleSetConstructor = 59, RuleSetElement = 60, RuleExprList = 61, RuleStatement = 62, 
+    RuleStmtList = 63, RuleSimpleStatement = 64, RuleStructStmt = 65, RuleCompoundStmt = 66, 
+    RuleConditionalStmt = 67, RuleProcedureCall = 68, RuleAssignmentStmt = 69, 
+    RuleIfStmt = 70, RuleCaseStmt = 71, RuleCaseSelector = 72, RuleCaseLabel = 73, 
+    RuleLoopStmt = 74, RuleRepeatStmt = 75, RuleWhileStmt = 76, RuleForStmt = 77, 
+    RuleWithStmt = 78, RuleTryExceptStmt = 79, RuleExceptionBlock = 80, 
+    RuleTryFinallyStmt = 81, RuleRaiseStmt = 82, RuleProcedureDeclSection = 83, 
+    RuleProcedureDecl = 84, RuleFunctionDecl = 85, RuleConstructorDecl = 86, 
+    RuleDestructorDecl = 87, RuleFunctionHeading = 88, RuleProcedureHeading = 89, 
+    RuleFormalParameters = 90, RuleFormalParm = 91, RuleParameter = 92, 
+    RuleDirective = 93, RuleExternalDirective = 94, RuleObjectType = 95, 
+    RuleObjHeritage = 96, RuleMethodList = 97, RuleMethodHeading = 98, RuleConstructorHeading = 99, 
+    RuleDestructorHeading = 100, RuleObjFieldList = 101, RuleInitSection = 102, 
+    RuleClassType = 103, RuleClassHeritage = 104, RuleClassVisibility = 105, 
+    RuleClassFieldList = 106, RuleClassMethodList = 107, RuleClassPropertyList = 108, 
+    RulePropertyList = 109, RulePropertyInterface = 110, RulePropertyParameterList = 111, 
+    RulePropertySpecifiers = 112, RuleInterfaceType = 113, RuleInterfaceHeritage = 114, 
+    RuleRequiresClause = 115, RuleContainsClause = 116, RuleIdentList = 117, 
+    RuleQualIdList = 118, RuleQualId = 119, RuleTypeId = 120, RulePredefinedType = 121, 
+    RuleCharExpr = 122, RuleUnitId = 123, RuleLabelId = 124, RuleString = 125, 
+    RuleNumber = 126, RuleConstExpr = 127
   };
 
   explicit ObjectPascalParser(antlr4::TokenStream *input);
@@ -108,7 +107,6 @@ public:
   class UnitContext;
   class PackageContext;
   class LibraryContext;
-  class ProgramBlockContext;
   class UsesClauseContext;
   class PortabilityDirectiveContext;
   class InterfaceSectionContext;
@@ -227,13 +225,11 @@ public:
   class TypeIdContext;
   class PredefinedTypeContext;
   class CharExprContext;
-  class SubrangeExpContext;
-  class ConstExprContext;
   class UnitIdContext;
   class LabelIdContext;
   class StringContext;
   class NumberContext;
-  class SignedIntegerContext; 
+  class ConstExprContext; 
 
   class  GoalContext : public antlr4::ParserRuleContext {
   public:
@@ -258,11 +254,14 @@ public:
     antlr4::tree::TerminalNode *PROGRAM();
     antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *SEMI();
-    ProgramBlockContext *programBlock();
+    CompoundStmtContext *compoundStmt();
     antlr4::tree::TerminalNode *DOT();
     antlr4::tree::TerminalNode *LEFT_PAREN();
     IdentListContext *identList();
     antlr4::tree::TerminalNode *RIGHT_PAREN();
+    UsesClauseContext *usesClause();
+    std::vector<DeclSectionContext *> declSection();
+    DeclSectionContext* declSection(size_t i);
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -317,21 +316,8 @@ public:
     antlr4::tree::TerminalNode *LIBRARY();
     antlr4::tree::TerminalNode *Identifier();
     antlr4::tree::TerminalNode *SEMI();
-    ProgramBlockContext *programBlock();
-    antlr4::tree::TerminalNode *DOT();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  LibraryContext* library();
-
-  class  ProgramBlockContext : public antlr4::ParserRuleContext {
-  public:
-    ProgramBlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
     CompoundStmtContext *compoundStmt();
+    antlr4::tree::TerminalNode *DOT();
     UsesClauseContext *usesClause();
     std::vector<DeclSectionContext *> declSection();
     DeclSectionContext* declSection(size_t i);
@@ -341,7 +327,7 @@ public:
    
   };
 
-  ProgramBlockContext* programBlock();
+  LibraryContext* library();
 
   class  UsesClauseContext : public antlr4::ParserRuleContext {
   public:
@@ -2380,38 +2366,6 @@ public:
 
   CharExprContext* charExpr();
 
-  class  SubrangeExpContext : public antlr4::ParserRuleContext {
-  public:
-    SubrangeExpContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *Identifier();
-    antlr4::tree::TerminalNode *IntegerLiteral();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  SubrangeExpContext* subrangeExp();
-
-  class  ConstExprContext : public antlr4::ParserRuleContext {
-  public:
-    ConstExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    NumberContext *number();
-    StringContext *string();
-    CharExprContext *charExpr();
-    std::vector<antlr4::tree::TerminalNode *> IntegerLiteral();
-    antlr4::tree::TerminalNode* IntegerLiteral(size_t i);
-    AdditiveOpContext *additiveOp();
-
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  ConstExprContext* constExpr();
-
   class  UnitIdContext : public antlr4::ParserRuleContext {
   public:
     UnitIdContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -2468,20 +2422,22 @@ public:
 
   NumberContext* number();
 
-  class  SignedIntegerContext : public antlr4::ParserRuleContext {
+  class  ConstExprContext : public antlr4::ParserRuleContext {
   public:
-    SignedIntegerContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    ConstExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *IntegerLiteral();
-    antlr4::tree::TerminalNode *PLUS();
-    antlr4::tree::TerminalNode *MINUS();
+    std::vector<NumberContext *> number();
+    NumberContext* number(size_t i);
+    StringContext *string();
+    CharExprContext *charExpr();
+    AdditiveOpContext *additiveOp();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
   };
 
-  SignedIntegerContext* signedInteger();
+  ConstExprContext* constExpr();
 
 
   // By default the static state used to implement the parser is lazily initialized during the first

@@ -35,10 +35,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitProgramBlock(ObjectPascalParser::ProgramBlockContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitUsesClause(ObjectPascalParser::UsesClauseContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -511,14 +507,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitSubrangeExp(ObjectPascalParser::SubrangeExpContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitUnitId(ObjectPascalParser::UnitIdContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -535,7 +523,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitSignedInteger(ObjectPascalParser::SignedIntegerContext *ctx) override {
+  virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *ctx) override {
     return visitChildren(ctx);
   }
 

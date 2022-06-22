@@ -6,25 +6,23 @@ options {
 
 goal: program | package | library | unit;
 program: PROGRAM Identifier (LEFT_PAREN identList RIGHT_PAREN)? SEMI 
-        programBlock DOT;
+        usesClause? declSection* compoundStmt DOT;
 
 unit: UNIT qualId (portabilityDirective)? SEMI interfaceSection implementationSection initSection DOT;
 
 package: PACKAGE Identifier SEMI requiresClause? containsClause? END DOT;
 
-library: LIBRARY Identifier SEMI  programBlock DOT;
-
-programBlock: usesClause? declSection*  compoundStmt;
+library: LIBRARY Identifier SEMI  usesClause? declSection* compoundStmt DOT;
 
 usesClause: USES qualIdList SEMI;
 
-portabilityDirective: PLATFORM | DEPRECATED | LIBRARY; //хз
+portabilityDirective: PLATFORM | DEPRECATED | LIBRARY;
 
 interfaceSection: INTERFACE
                     usesClause?
                     interfaceDecl*;
 
-interfaceDecl:  constSection | typeSection | varSection | exportedHeading; //хз
+interfaceDecl:  constSection | typeSection | varSection | exportedHeading;
 
 exportedHeading: (procedureHeading SEMI directive?) | (functionHeading SEMI directive?);
 
