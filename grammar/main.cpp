@@ -1,8 +1,7 @@
 #include <iostream>
 
 #include "antlr4-runtime.h"
-#include "libs/ObjectPascalParserBaseVisitor.h"
-#include "libs/ObjectPascalParserVisitor.h"
+#include "AstVisitor.h"
 #include "libs/ObjectPascalLexer.h"
 #include "libs/ObjectPascalParser.h"
 
@@ -29,8 +28,9 @@ int main(int argc, const char* argv[]) {
     cout << "parser created" << endl;   
     
     ObjectPascalParser::GoalContext* tree = parser.goal();
-    ObjectPascalParserBaseVisitor visitor;
     cout << tree->toStringTree(true) << endl;
+    AstVisitor visitor;
+    visitor.visitGoal(tree);
     //Scene scene = visitor.visitFile(tree).as<Scene>();
     //scene.draw();
     return 0;
