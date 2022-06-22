@@ -29,45 +29,16 @@ BasicBlock *mainBlock = BasicBlock::Create(TheModule->getContext(), "main.0", ma
 
 void WriteFile(const std::string& name)
 {
-    InitializeAllTargetInfos();
-    InitializeAllTargets();
-    InitializeAllTargetMCs();
-    InitializeAllAsmParsers();
-    InitializeAllAsmPrinters();
-
-    auto TargetTriple = sys::getDefaultTargetTriple();
-    TheModule->setTargetTriple(TargetTriple);
-
-    std::string error;
-    auto Target = TargetRegistry::lookupTarget(TargetTriple, error);
-    if (!Target)
-    {
-        errs() << error;
-        return;
-    }
-    
-    auto TheTargetMachine = Target->createTargetMachine(TargetTriple, "generic", "", TargetOptions(), Optional<Reloc::Model>());
-    TheModule->setDataLayout(TheTargetMachine->createDataLayout());
-
-    std::string filename = name + ".o";
+    std::string objname = name + ".o", outname = name + ".out";
     std::error_code ec;
-    raw_fd_ostream dest(filename, ec, sys::fs::OF_None);
-    if (ec)
-    {
-        errs() << "Can't open a file:" << ec.message();
-        return;
-    }
-
-    legacy::PassManager Pass;
-    auto filetype = CGFT_ObjectFile;
-    TheTargetMachine->addPassesToEmitFile(Pass, dest, nullptr, filetype);
-    Pass.run(*TheModule);
-    dest.flush();
-
-    execl(GPP, GPP, "inc.o", filename, "-o", name, NULL);
+    raw_ostream *out = new raw_fd_ostream(name, ec, sys::fs::F_None);
+    WriteBitcodeToFile(*(TheModule.get()), *out);
+    delete out;
+    execl(LLC, LLC, name, "-filetype=obj", "-o", objname, NULL);
+    execl(GPP, GPP, "inc.o", objname, "-o", outname, NULL);
 }
 
-Type *getType(TypeName t, const std::string& custom = "")
+Type *getType(TypeName t, const std::string& custom)
 {
     switch (t)
     {
@@ -89,12 +60,11 @@ Type *getType(TypeName t, const std::string& custom = "")
     case Char:
         return Type::getInt8Ty(TheContext);
     case Custom:
-        auto type = CustomTypes[custom];
-        if (type)
-            return type;
-    default:
-        throw("Unknown typename");
+        Type *ty = CustomTypes[custom];
+        if (ty)
+            return ty;
     }
+    throw("Unknown custom typename");
     return Type::getVoidTy(TheContext);
 }
 
@@ -248,7 +218,7 @@ Value *BinaryExprAST::codegen()
     // Special case '=' because we don't want to emit the LHS as an expression.
     if (Op == ASSIGN)
     {
-        VariableExprAST *LHSE = static_cast<VariableExprAST *>(LHS.get());
+        VariableExprAST *LHSE = static_cast<VariableExprAST *>(LHS);
         if (!LHSE)
             throw("destination of '=' must be a variable");
         // Codegen the RHS.

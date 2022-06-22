@@ -17,9 +17,8 @@
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Host.h"
-#include "llvm/Support/TargetSelect.h"
-#include "llvm/Target/TargetMachine.h"
-#include "llvm/Target/TargetOptions.h"
+#include "llvm/Bitcode/BitcodeReader.h"
+#include "llvm/Bitcode/BitcodeWriter.h"
 
 #include <cctype>
 #include <cstdlib>
@@ -29,6 +28,7 @@
 #include <string>
 #include <vector>
 
+#define LLC "/lib/llvm-10/bin/llc"
 #define GPP "/bin/g++"
 
 using namespace llvm;
@@ -73,10 +73,11 @@ public:
 // ExprListAST - class for program block - list of expression
 class ExprListAST : public ExprAST
 {
-    std::vector<std::unique_ptr<ExprAST>> Nodes;
+    std::vector<ExprAST *> Nodes;
 
 public:
-    ExprListAST(std::vector<std::unique_ptr<ExprAST>> Nodes) : Nodes(std::move(Nodes)) {}
+    ExprListAST(std::vector<ExprAST *> Nodes) : Nodes(std::move(Nodes)) {}
+    ~ExprListAST() { for (int i = 0; i < Nodes.size(); i++) delete Nodes[i]; Nodes.clear(); }
     Value *codegen() override;
 };
 
@@ -84,11 +85,12 @@ public:
 class ProgramExprAST : public ExprAST
 {
     std::string Name;
-    std::unique_ptr<ExprListAST> Declarations;
-    std::unique_ptr<ExprListAST> MainBlock;
+    ExprListAST *Declarations;
+    ExprListAST *MainBlock;
 
 public:
-    ProgramExprAST(const std::string &Name, std::unique_ptr<ExprListAST> Decls, std::unique_ptr<ExprListAST> Block) : Name(Name), Declarations(std::move(Decls)), MainBlock(std::move(Block)) {}
+    ProgramExprAST(const std::string &Name, ExprListAST *Decls, ExprListAST *Block) : Name(Name), Declarations(Decls), MainBlock(Block) {}
+    ~ProgramExprAST() { delete Declarations; delete MainBlock; }
     Value *codegen() override;
 };
 
@@ -98,7 +100,8 @@ class NumberExprAST : public ExprAST
     double Val;
 
 public:
-    NumberExprAST(double Val, const TypeName &Type = Integer) : Val(Val) { type = Type; }
+    NumberExprAST(double Val, TypeName Type = Integer) : Val(Val) { type = Type; }
+    ~NumberExprAST() {}
     Value *codegen() override;
 };
 
@@ -108,7 +111,8 @@ class StringExprAST : public ExprAST
     std::string Val;
 
 public:
-    StringExprAST(const std::string &Val, const TypeName &Type = Char) : Val(Val) { type = Type; }
+    StringExprAST(const std::string &Val, TypeName Type = Char) : Val(Val) { type = Type; }
+    ~StringExprAST() {}
     Value *codegen() override;
 };
 
@@ -119,7 +123,8 @@ class ConstExprAST : public ExprAST
     double Val;
 
 public:
-    ConstExprAST(const std::string &Name, double Val, const TypeName &Type = Integer) : Name(Name), Val(Val) { type = Type; }
+    ConstExprAST(const std::string &Name, double Val, TypeName Type = Integer) : Name(Name), Val(Val) { type = Type; }
+    ~ConstExprAST() {}
     Value *codegen() override;
 };
 
@@ -131,7 +136,9 @@ class DeclareExprAST : public ExprAST
     int Length;
 
 public:
-    DeclareExprAST(const std::string &Name, const TypeName &Type = Integer, int Offset = 0, int Length = 0) : Name(Name), Offset(Offset), Length(Length) { type = Type; }
+    DeclareExprAST(const std::string &Name, TypeName Type = Integer, int Offset = 0, int Length = 0) : 
+        Name(Name), Offset(Offset), Length(Length) { type = Type; }
+    ~DeclareExprAST() {}
     Value *codegen() override;
 };
 
@@ -143,6 +150,7 @@ protected:
 
 public:
     VariableExprAST(const std::string &Name) : Name(Name) {}
+    ~VariableExprAST() {}
     Value *codegen() override;
     const std::string &getName() const { return Name; }
     virtual Value *alloca() const;
@@ -151,10 +159,12 @@ public:
 // ArrayExprAST - class for referencing array element
 class ArrayExprAST : public VariableExprAST
 {
-    std::unique_ptr<ExprAST> Index;
+    ExprAST *Index;
 
 public:
-    ArrayExprAST(const std::string &Name, std::unique_ptr<ExprAST> Index, const TypeName &Type = Integer) : VariableExprAST(Name), Index(std::move(Index)) { type = Type; }
+    ArrayExprAST(const std::string &Name, ExprAST *Index, TypeName Type = Integer) : 
+        VariableExprAST(Name), Index(Index) { type = Type; }
+    ~ArrayExprAST() { delete Index; }
     Value *codegen() override;
     virtual Value *alloca() const;
 };
@@ -183,25 +193,22 @@ int getPrecedence(OperEnum &op);
 class BinaryExprAST : public ExprAST
 {
     OperEnum Op;
-    std::unique_ptr<ExprAST> LHS, RHS;
+    ExprAST *LHS, *RHS;
 
 public:
-    BinaryExprAST(OperEnum Op, std::unique_ptr<ExprAST> LHS,
-                  std::unique_ptr<ExprAST> RHS)
-        : Op(Op), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
+    BinaryExprAST(OperEnum Op, ExprAST *LHS, ExprAST *RHS) : Op(Op), LHS(LHS), RHS(RHS) {}
+    ~BinaryExprAST() { delete LHS; delete RHS; }
     Value *codegen() override;
 };
 
 // IfExprAST - class for if/then/else.
 class IfExprAST : public ExprAST
 {
-    std::unique_ptr<ExprAST> Cond, Then, Else;
+    ExprAST *Cond, *Then, *Else;
 
 public:
-    IfExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Then,
-              std::unique_ptr<ExprAST> Else)
-        : Cond(std::move(Cond)), Then(std::move(Then)), Else(std::move(Else)) {}
-
+    IfExprAST(ExprAST *Cond, ExprAST *Then, ExprAST *Else) : Cond(Cond), Then(Then), Else(Else) {}
+    ~IfExprAST() { delete Cond; delete Then; delete Else; }
     Value *codegen() override;
 };
 
@@ -209,37 +216,35 @@ public:
 class ForExprAST : public ExprAST
 {
     std::string VarName;
-    std::unique_ptr<ExprAST> Start, End, Step, Body;
+    ExprAST *Start, *End, *Step, *Body;
 
 public:
-    ForExprAST(const std::string &VarName, std::unique_ptr<ExprAST> Start,
-               std::unique_ptr<ExprAST> End, std::unique_ptr<ExprAST> Step,
-               std::unique_ptr<ExprAST> Body)
-        : VarName(VarName), Start(std::move(Start)), End(std::move(End)),
-          Step(std::move(Step)), Body(std::move(Body)) {}
-
+    ForExprAST(const std::string &VarName, ExprAST *Start,
+               ExprAST *End, ExprAST *Step, ExprAST *Body)
+        : VarName(VarName), Start(Start), End(End), Step(Step), Body(Body) {}
+    ~ForExprAST() { delete Start; delete Step; delete End; delete Body; }
     Value *codegen() override;
 };
 
 // WhileExprAST -  class for while/do.
 class WhileExprAST : public ExprAST
 {
-    std::unique_ptr<ExprAST> Cond, Body;
+    ExprAST *Cond, *Body;
 
 public:
-    WhileExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Body)
-        : Cond(std::move(Cond)), Body(std::move(Body)) {}
+    WhileExprAST(ExprAST *Cond, ExprAST *Body) : Cond(Cond), Body(Body) {}
+    ~WhileExprAST() { delete Body; delete Cond; }
     Value *codegen() override;
 };
 
 // RepeatExprAST -  class for repeat/until.
 class RepeatExprAST : public ExprAST
 {
-    std::unique_ptr<ExprAST> Cond, Body;
+    ExprAST *Cond, *Body;
 
 public:
-    RepeatExprAST(std::unique_ptr<ExprAST> Cond, std::unique_ptr<ExprAST> Body)
-        : Cond(std::move(Cond)), Body(std::move(Body)) {}
+    RepeatExprAST(ExprAST *Cond, ExprAST *Body) : Cond(Cond), Body(Body) {}
+    ~RepeatExprAST() { delete Body; delete Cond; }
     Value *codegen() override;
 };
 
@@ -247,11 +252,11 @@ public:
 class CallExprAST : public ExprAST
 {
     std::string Callee;
-    std::vector<std::unique_ptr<ExprAST>> Args;
+    std::vector<ExprAST *> Args;
 
 public:
-    CallExprAST(const std::string &Callee, std::vector<std::unique_ptr<ExprAST>> Args)
-        : Callee(Callee), Args(std::move(Args)) {}
+    CallExprAST(const std::string &Callee, std::vector<ExprAST *> Args) : Callee(Callee), Args(std::move(Args)) {}
+    ~CallExprAST() { for (int i = 0; i < Args.size(); i++) delete Args[i]; Args.clear(); }
     Value *codegen() override;
 };
 
@@ -263,6 +268,7 @@ class LibraryExprAST : public ExprAST
 
 public:
     LibraryExprAST(const std::string &Name, const std::string &Arg) : Name(Name), Arg(Arg) {}
+    ~LibraryExprAST() {}
     Value *codegen() override;
 };
 
@@ -271,6 +277,7 @@ class ReturnExprAST : public ExprAST
 {
 public:
     ReturnExprAST() {}
+    ~ReturnExprAST() {}
     Value *codegen() override;
 };
 
@@ -285,19 +292,19 @@ public:
 
     PrototypeAST(const std::string &Name, std::vector<std::string> Args, std::vector<TypeName> ArgTypes, TypeName Ret)
         : Name(Name), Args(std::move(Args)), Types(std::move(ArgTypes)), ReturnType(Ret) {}
+    ~PrototypeAST() { Args.clear(); Types.clear(); }
     Function *codegen() override;
 };
 
 // FunctionAST - class represents a function definition itself.
 class FunctionAST : public ExprAST
 {
-    std::unique_ptr<PrototypeAST> Proto;
-    std::vector<std::unique_ptr<ExprAST>> Body;
+    PrototypeAST *Proto;
+    std::vector<ExprAST *> Body;
 
 public:
-    FunctionAST(std::unique_ptr<PrototypeAST> Proto,
-                std::vector<std::unique_ptr<ExprAST>> Body)
-        : Proto(std::move(Proto)), Body(std::move(Body)) {}
+    FunctionAST(PrototypeAST *Proto, std::vector<ExprAST *> Body) : Proto(Proto), Body(std::move(Body)) {}
+    ~FunctionAST() { for (int i = 0; i < Body.size(); i++) delete Body[i]; Body.clear(); delete Proto; }
     Function *codegen() override;
 };
 
@@ -305,34 +312,37 @@ public:
 class RecordAST : public ExprAST
 {
 protected:
-    std::vector<std::unique_ptr<ExprAST>> DataMembers;
+    std::vector<ExprAST *> DataMembers;
 
 public:
     std::string Name;
 
-    RecordAST(const std::string &Name, std::vector<std::unique_ptr<ExprAST>> Body, const TypeName &Type = Custom) : 
+    RecordAST(const std::string &Name, std::vector<ExprAST *> Body, TypeName Type = Custom) : 
         Name(Name), DataMembers(std::move(Body)) { type = Type; }
+    ~RecordAST() { for (int i = 0; i < DataMembers.size(); i++) delete DataMembers[i]; DataMembers.clear(); }
     Value *codegen() override;
 };
 
 // ClassAST - class for class definition
 class ClassAST : public RecordAST
 {
-    std::vector<std::unique_ptr<PrototypeAST>> ProtoMembers;
+    std::vector<PrototypeAST *> ProtoMembers;
 
 public:
-    ClassAST(const std::string &Name, std::vector<std::unique_ptr<ExprAST>> Data, std::vector<std::unique_ptr<PrototypeAST>> Proto) : 
+    ClassAST(const std::string &Name, std::vector<ExprAST *> Data, std::vector<PrototypeAST *> Proto) : 
              RecordAST(Name, std::move(Data)), ProtoMembers(std::move(Proto)) {}
+    ~ClassAST() { for (int i = 0; i < ProtoMembers.size(); i++) delete ProtoMembers[i]; ProtoMembers.clear(); }
     Value *codegen() override;
 };
 
 // TypeExprAST - class for type directive
 class TypeExprAST : public ExprAST
 {
-    std::vector<std::unique_ptr<RecordAST>> Declarations;
+    std::vector<RecordAST *> Declarations;
 
 public:
-    TypeExprAST(std::vector<std::unique_ptr<RecordAST>> Decls) : Declarations(std::move(Decls)) {}
+    TypeExprAST(std::vector<RecordAST *> Decls) : Declarations(std::move(Decls)) {}
+    ~TypeExprAST() { for (int i = 0; i < Declarations.size(); i++) delete Declarations[i]; Declarations.clear(); }
     Value *codegen() override;
 };
 
