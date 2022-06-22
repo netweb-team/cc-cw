@@ -6,11 +6,11 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # compiler must be 11 or 14
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-fexceptions -g -o3")
+# set(LLVM_CONFIG_PATH /lib/llvm-10/bin/llvm-config)
 
 # set(CMAKE_C_STANDARD 99)
-# set(CMAKE_CXX_STANDARD 14)
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# set(CMAKE_CXX_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
 # set(CMAKE_C_FLAGS "-g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
 # set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 # set(CMAKE_C_COMPILER C:/Qt/Tools/mingw810_64/bin/gcc.exe)
@@ -35,6 +35,12 @@ set(ANTLR_EXECUTABLE /usr/local/lib/antlr-4.10.1-complete.jar)
 # add macros to generate ANTLR Cpp code from grammar
 find_package(ANTLR REQUIRED)
 
+find_package(LLVM REQUIRED CONFIG)
+
+include_directories(${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+add_definitions(${LLVM_DEFINITIONS_LIST})
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 # Call macro to add lexer and grammar to your build dependencies.
@@ -55,9 +61,11 @@ find_package(Threads REQUIRED)
 # add generated grammar to demo binary target
 add_executable(${PROJECT_NAME} main.cpp 
                libs/ObjectPascalLexer.cpp libs/ObjectPascalParser.cpp
+               ast.cpp AstVisitor.cpp
                # ${ANTLR_ObjectPascalLexer_CXX_OUTPUTS}
                # ${ANTLR_ObjectPascalParser_CXX_OUTPUTS}
 )
-target_link_libraries(${PROJECT_NAME} antlr4_static pthread Threads::Threads)
+llvm_map_components_to_libnames(llvm_libs core support irreader bitwriter)
+target_link_libraries(${PROJECT_NAME} antlr4_static pthread Threads::Threads ${llvm_libs})
 
 
