@@ -13,23 +13,53 @@
 class AstVisitor : public ObjectPascalParserBaseVisitor
 {
 public:
-    std::any visitGoal(ObjectPascalParser::GoalContext *ctx) override
-    {
-        std::cout << "goal" << std::endl;
-        return visitChildren(ctx);
-    }
+    std::any visitGoal(ObjectPascalParser::GoalContext *ctx) override;
 
     std::any visitProgram(ObjectPascalParser::ProgramContext *ctx) override;
 
-    std::any visitConstantDecl(ObjectPascalParser::ConstantDeclContext *ctx) override
-    {
-        if (ctx->constExpr()->number().size())
-        {
-            const double d = std::stod(ctx->constExpr()->number()[0]->getText());
-            // return std::make_unique<ConstExprAST>(ctx->Ident->getSymbol()->getText(), d, Double);
-        }
-        return visitChildren(ctx);
-    }
+    std::any visitStmtList(ObjectPascalParser::StmtListContext *ctx) override;
+
+    std::any visitStatement(ObjectPascalParser::StatementContext *ctx) override;
+
+    std::any visitSimpleStatement(ObjectPascalParser::SimpleStatementContext *ctx) override;
+
+    std::any visitAssignmentStmt(ObjectPascalParser::AssignmentStmtContext *ctx) override;
+
+    std::any visitProcedureCall(ObjectPascalParser::ProcedureCallContext *ctx) override;
+
+    std::any visitStructStmt(ObjectPascalParser::StructStmtContext *ctx) override;
+
+    std::any visitConditionalStmt(ObjectPascalParser::ConditionalStmtContext *ctx) override;
+
+    std::any visitLoopStmt(ObjectPascalParser::LoopStmtContext *ctx) override;
+
+    std::any visitConstSection(ObjectPascalParser::ConstSectionContext *ctx) override;
+
+    std::any visitConstantDecl(ObjectPascalParser::ConstantDeclContext *ctx) override;
+
+    std::any visitConstExpr(ObjectPascalParser::ConstExprContext *ctx) override;
+
+    std::any visitVarSection(ObjectPascalParser::VarSectionContext *ctx) override;
+
+    std::any visitVarDecl(ObjectPascalParser::VarDeclContext *ctx) override;
+
+    std::any visitProcedureDecl(ObjectPascalParser::ProcedureDeclContext *ctx) override;
+
+    std::any visitFunctionDecl(ObjectPascalParser::FunctionDeclContext *ctx) override;
+
+    std::any visitProcedureHeading(ObjectPascalParser::ProcedureHeadingContext *ctx) override;
+
+    std::any visitFunctionHeading(ObjectPascalParser::FunctionHeadingContext *ctx) override;
+
+    std::any visitTypeSection(ObjectPascalParser::TypeSectionContext *ctx) override;
+
+    std::any visitBlock(ObjectPascalParser::BlockContext *ctx) override;
+
+    std::any visitIdentList(ObjectPascalParser::IdentListContext *ctx) override;
+
+    std::any visitFormalParameters(ObjectPascalParser::FormalParametersContext *ctx) override;
+
+    std::any visitParameter(ObjectPascalParser::ParameterContext *ctx) override;
 
     std::any visitString(ObjectPascalParser::StringContext *ctx) override;
 
