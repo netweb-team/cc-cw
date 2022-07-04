@@ -56,19 +56,15 @@ arrayConstant: LEFT_PAREN typedConstant ( COMMA typedConstant )* RIGHT_PAREN;
 recordConstant:  LEFT_PAREN (recordFieldConstant SEMI)* RIGHT_PAREN; 
 
 recordFieldConstant: Identifier COLON typedConstant;
-type:  typeId |  simpleType |  strucType | pointerType | stringType | procedureType | variantType | classRefType;
 
+type:  typeId |  simpleType |  strucType | pointerType | stringType | procedureType | variantType | classRefType;
 restrictedType:  objectType | classType | interfaceType;
 
 classRefType: CLASS OF typeId; 
 
 simpleType: (ordinalType | realType);
-realType: REAL48 | REAL | SINGLE | DOUBLE | EXTENDED | CURRENCY | COMP;
 
 ordinalType: (subrangeType | enumeratedType | ordIdent);
-ordIdent: SHORTINT | SMALLINT | INTEGER | BYTE| CARDINAL | LONGINT | INT64 | WORD | BOOLEAN | CHAR | WIDECHAR | LONGWORD | PCHAR;
-
-variantType: VARIANT | OLEVARIANT;
 
 subrangeType: (constExpr | Identifier) DOT_DOT (constExpr | Identifier);
 
@@ -105,10 +101,7 @@ varDecl: identList COLON type ((ABSOLUTE (Identifier | constExpr)) | ASSIGN cons
 expression: simpleGrouped (relOp simpleGrouped)*;
 simpleGrouped: simpleExpression | LEFT_PAREN simpleExpression RIGHT_PAREN; 
 simpleExpression: (PLUS | MINUS)? term (addOp term)*;
-
 term: factor (mulOp factor)*;
-
-
 factor: designator (LEFT_PAREN exprList RIGHT_PAREN)? 
 |  (DOG designator) 
 | number
@@ -119,17 +112,14 @@ factor: designator (LEFT_PAREN exprList RIGHT_PAREN)?
 | (NOT factor) 
 | setConstructor 
 | (typeId LEFT_PAREN expression RIGHT_PAREN);
-relOp: GRATER | LESS | LESS_EQUAL | GRATER_EQUAL | NOT_EQUAL | IN | IS | AS;
-addOp: PLUS | MINUS | OR | XOR;
-mulOp: STAR | DIV | MOD | AND | SHL | SHR;
-additiveOp: PLUS | MINUS | STAR;
+
 designator: qualId (DOT Identifier | LEFT_BRACKET exprList RIGHT_BRACKET | CARET)*;
 setConstructor: LEFT_BRACKET setElement (COMMA setElement)* RIGHT_BRACKET;
 setElement: expression (DOT_DOT expression)?;
 exprList: expression (COMMA expression)*; 
 statement: (labelId COLON)? (simpleStatement | structStmt); 
 stmtList: (statement SEMI)+;
-simpleStatement:      assignmentStmt  |INHERITED | ( GOTO labelId) | procedureCall ;
+simpleStatement: assignmentStmt | INHERITED | ( GOTO labelId) | procedureCall ;
 structStmt: compoundStmt | conditionalStmt | loopStmt | withStmt | tryExceptStmt | tryFinallyStmt | raiseStmt; // | AssemblerStmt;
 compoundStmt: BEGIN stmtList SEMI? END;
 conditionalStmt: ifStmt | caseStmt;
@@ -190,20 +180,14 @@ initSection: (INITIALIZATION stmtList (FINALIZATION stmtList)? END) | (BEGIN stm
 
 //REGION CLASS
 
-
 classType: CLASS classHeritage? (classFieldList | classMethodList | classPropertyList)* END;
-
 classHeritage: LEFT_PAREN identList RIGHT_PAREN;
 
-classVisibility: PUBLIC | PROTECTED | PRIVATE | PUBLISHED;
-
 classFieldList: classVisibility? objFieldList+;
-
 classMethodList: classVisibility? methodList+;
 classPropertyList: classVisibility? propertyList+;
 
 propertyList: PROPERTY Identifier propertyInterface? propertySpecifiers? portabilityDirective?;
-
 propertyInterface: propertyParameterList? COLON Identifier;
 propertyParameterList: LEFT_BRACKET (identList COLON typeId) SEMI* RIGHT_BRACKET;
 propertySpecifiers: (INDEX constExpr) 
@@ -212,12 +196,12 @@ propertySpecifiers: (INDEX constExpr)
                      | (STORED (Identifier | constExpr))
                      | ((DEFAULT constExpr) | NODEFAULT)
                      | (IMPLEMENTS typeId);
+
 interfaceType: INTERFACE 
 				(interfaceHeritage)?
                  (classMethodList)?
                  (classPropertyList)?        
                  END;
-
 interfaceHeritage: LEFT_PAREN Identifier RIGHT_PAREN;
 
 
@@ -227,8 +211,6 @@ identList: Identifier (COMMA Identifier)*;
 qualIdList: qualId (COMMA qualId)+;
 qualId: unitId (DOT Identifier CARET+)?; 
 typeId: (unitId DOT)? Identifier;
-
-predefinedType: INTEGER | REAL | BOOLEAN | CHAR | BYTE;
 
 // Ident* -> <Case-Sensitive> Ident;
 //ENDREGION CLASS
@@ -240,3 +222,13 @@ string: StringLiteral;
 number: Integer | Float;
 constExpr: number | string | charExpr | (number additiveOp number);
 
+realType: REAL48 | REAL | SINGLE | DOUBLE | EXTENDED | CURRENCY | COMP;
+ordIdent: SHORTINT | SMALLINT | INTEGER | BYTE| CARDINAL | LONGINT | INT64 | WORD | BOOLEAN | CHAR | WIDECHAR | LONGWORD | PCHAR;
+variantType: VARIANT | OLEVARIANT;
+
+relOp: GRATER | LESS | LESS_EQUAL | GRATER_EQUAL | NOT_EQUAL | ASSIGN | IN | IS | AS;
+addOp: PLUS | MINUS | OR | XOR;
+mulOp: STAR | DIV | MOD | AND | SHL | SHR;
+additiveOp: PLUS | MINUS | STAR;
+
+classVisibility: PUBLIC | PROTECTED | PRIVATE | PUBLISHED;

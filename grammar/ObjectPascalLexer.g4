@@ -247,4 +247,3 @@ BooleanLiteral: FALSE | TRUE;
 
 MultiLineMacro:
 	'#' (~[\n]*? '\\' '\r'? '\n')+ ~ [\n]+ -> channel (HIDDEN);
-

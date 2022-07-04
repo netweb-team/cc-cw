@@ -75,13 +75,7 @@ public:
 
     virtual std::any visitSimpleType(ObjectPascalParser::SimpleTypeContext *context) = 0;
 
-    virtual std::any visitRealType(ObjectPascalParser::RealTypeContext *context) = 0;
-
     virtual std::any visitOrdinalType(ObjectPascalParser::OrdinalTypeContext *context) = 0;
-
-    virtual std::any visitOrdIdent(ObjectPascalParser::OrdIdentContext *context) = 0;
-
-    virtual std::any visitVariantType(ObjectPascalParser::VariantTypeContext *context) = 0;
 
     virtual std::any visitSubrangeType(ObjectPascalParser::SubrangeTypeContext *context) = 0;
 
@@ -126,14 +120,6 @@ public:
     virtual std::any visitTerm(ObjectPascalParser::TermContext *context) = 0;
 
     virtual std::any visitFactor(ObjectPascalParser::FactorContext *context) = 0;
-
-    virtual std::any visitRelOp(ObjectPascalParser::RelOpContext *context) = 0;
-
-    virtual std::any visitAddOp(ObjectPascalParser::AddOpContext *context) = 0;
-
-    virtual std::any visitMulOp(ObjectPascalParser::MulOpContext *context) = 0;
-
-    virtual std::any visitAdditiveOp(ObjectPascalParser::AdditiveOpContext *context) = 0;
 
     virtual std::any visitDesignator(ObjectPascalParser::DesignatorContext *context) = 0;
 
@@ -229,8 +215,6 @@ public:
 
     virtual std::any visitClassHeritage(ObjectPascalParser::ClassHeritageContext *context) = 0;
 
-    virtual std::any visitClassVisibility(ObjectPascalParser::ClassVisibilityContext *context) = 0;
-
     virtual std::any visitClassFieldList(ObjectPascalParser::ClassFieldListContext *context) = 0;
 
     virtual std::any visitClassMethodList(ObjectPascalParser::ClassMethodListContext *context) = 0;
@@ -261,8 +245,6 @@ public:
 
     virtual std::any visitTypeId(ObjectPascalParser::TypeIdContext *context) = 0;
 
-    virtual std::any visitPredefinedType(ObjectPascalParser::PredefinedTypeContext *context) = 0;
-
     virtual std::any visitCharExpr(ObjectPascalParser::CharExprContext *context) = 0;
 
     virtual std::any visitUnitId(ObjectPascalParser::UnitIdContext *context) = 0;
@@ -274,6 +256,22 @@ public:
     virtual std::any visitNumber(ObjectPascalParser::NumberContext *context) = 0;
 
     virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *context) = 0;
+
+    virtual std::any visitRealType(ObjectPascalParser::RealTypeContext *context) = 0;
+
+    virtual std::any visitOrdIdent(ObjectPascalParser::OrdIdentContext *context) = 0;
+
+    virtual std::any visitVariantType(ObjectPascalParser::VariantTypeContext *context) = 0;
+
+    virtual std::any visitRelOp(ObjectPascalParser::RelOpContext *context) = 0;
+
+    virtual std::any visitAddOp(ObjectPascalParser::AddOpContext *context) = 0;
+
+    virtual std::any visitMulOp(ObjectPascalParser::MulOpContext *context) = 0;
+
+    virtual std::any visitAdditiveOp(ObjectPascalParser::AdditiveOpContext *context) = 0;
+
+    virtual std::any visitClassVisibility(ObjectPascalParser::ClassVisibilityContext *context) = 0;
 
 
 };

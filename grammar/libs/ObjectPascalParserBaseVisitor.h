@@ -127,19 +127,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitRealType(ObjectPascalParser::RealTypeContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitOrdinalType(ObjectPascalParser::OrdinalTypeContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitOrdIdent(ObjectPascalParser::OrdIdentContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitVariantType(ObjectPascalParser::VariantTypeContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -228,22 +216,6 @@ public:
   }
 
   virtual std::any visitFactor(ObjectPascalParser::FactorContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitRelOp(ObjectPascalParser::RelOpContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitAddOp(ObjectPascalParser::AddOpContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitMulOp(ObjectPascalParser::MulOpContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitAdditiveOp(ObjectPascalParser::AdditiveOpContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -435,10 +407,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitClassVisibility(ObjectPascalParser::ClassVisibilityContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitClassFieldList(ObjectPascalParser::ClassFieldListContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -499,10 +467,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitPredefinedType(ObjectPascalParser::PredefinedTypeContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitCharExpr(ObjectPascalParser::CharExprContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -524,6 +488,38 @@ public:
   }
 
   virtual std::any visitConstExpr(ObjectPascalParser::ConstExprContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitRealType(ObjectPascalParser::RealTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOrdIdent(ObjectPascalParser::OrdIdentContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitVariantType(ObjectPascalParser::VariantTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitRelOp(ObjectPascalParser::RelOpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAddOp(ObjectPascalParser::AddOpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitMulOp(ObjectPascalParser::MulOpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAdditiveOp(ObjectPascalParser::AdditiveOpContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitClassVisibility(ObjectPascalParser::ClassVisibilityContext *ctx) override {
     return visitChildren(ctx);
   }
 
