@@ -1,4 +1,4 @@
 #!/bin/sh
 cmake ./../; make
 
-./compiler listreverse.p
+#./compiler listreverse.p
