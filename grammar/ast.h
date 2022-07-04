@@ -22,14 +22,10 @@
 
 #include <cctype>
 #include <cstdlib>
-#include <unistd.h>
 
 #include <map>
 #include <string>
 #include <vector>
-
-#define LLC "/lib/llvm-10/bin/llc"
-#define GPP "/bin/g++"
 
 using namespace llvm;
 
@@ -85,11 +81,11 @@ public:
 class ProgramExprAST : public ExprAST
 {
     std::string Name;
-    ExprListAST *Declarations;
-    ExprListAST *MainBlock;
+    ExprAST *Declarations;
+    ExprAST *MainBlock;
 
 public:
-    ProgramExprAST(const std::string &Name, ExprListAST *Decls, ExprListAST *Block) : Name(Name), Declarations(Decls), MainBlock(Block) {}
+    ProgramExprAST(const std::string &Name, ExprAST *Decls, ExprAST *Block) : Name(Name), Declarations(Decls), MainBlock(Block) {}
     ~ProgramExprAST() { delete Declarations; delete MainBlock; }
     Value *codegen() override;
 };
@@ -174,7 +170,7 @@ enum OperEnum
     ASSIGN, // 0
     ADD,    // 1
     SUB,    // 2
-    MULT,   // 3
+    MUL,   // 3
     DIV,    // 4
     MOD,    // 5
     LT,     // 6
@@ -264,11 +260,11 @@ public:
 class LibraryExprAST : public ExprAST
 {
     std::string Name;
-    std::string Arg;
+    std::vector<std::string> Args;
 
 public:
-    LibraryExprAST(const std::string &Name, const std::string &Arg) : Name(Name), Arg(Arg) {}
-    ~LibraryExprAST() {}
+    LibraryExprAST(const std::string &Name, std::vector<std::string> Args) : Name(Name), Args(Args) {}
+    ~LibraryExprAST() { Args.clear(); }
     Value *codegen() override;
 };
 
@@ -290,7 +286,7 @@ public:
     std::vector<TypeName> Types;
     TypeName ReturnType;
 
-    PrototypeAST(const std::string &Name, std::vector<std::string> Args, std::vector<TypeName> ArgTypes, TypeName Ret)
+    PrototypeAST(const std::string &Name, std::vector<std::string> Args, std::vector<TypeName> ArgTypes, TypeName Ret = Integer)
         : Name(Name), Args(std::move(Args)), Types(std::move(ArgTypes)), ReturnType(Ret) {}
     ~PrototypeAST() { Args.clear(); Types.clear(); }
     Function *codegen() override;
@@ -349,5 +345,7 @@ public:
 //################################################################################
 AllocaInst *CreateEntryBlockAlloca(Function *TheFunction,
                                    const std::string &VarName);
+
+extern std::map<std::string, Function *> Library;
 
 #endif

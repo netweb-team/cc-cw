@@ -2,7 +2,7 @@
 #include <iostream>
 
 LLVMContext TheContext;
-std::unique_ptr<Module> TheModule(std::make_unique<Module>("my module", TheContext));
+std::unique_ptr<Module> TheModule(std::make_unique<Module>("help", TheContext));
 IRBuilder<> Builder = IRBuilder<>(TheContext);
 std::map<std::string, Value *> NamedValues;
 std::map<std::string, Value *> ConstValues;
@@ -34,8 +34,9 @@ void WriteFile(const std::string& name)
     raw_ostream *out = new raw_fd_ostream(name, ec, sys::fs::F_None);
     WriteBitcodeToFile(*(TheModule.get()), *out);
     delete out;
-    execl(LLC, LLC, name, "-filetype=obj", "-o", objname, NULL);
-    execl(GPP, GPP, "inc.o", objname, "-o", outname, NULL);
+
+    std::system(("llc " + name + " -filetype=obj -o " + objname).c_str());
+    std::system(("gcc " + objname + " inc.o -o " + outname).c_str());
 }
 
 Type *getType(TypeName t, const std::string& custom)
@@ -56,7 +57,7 @@ Type *getType(TypeName t, const std::string& custom)
         return Type::getInt16Ty(TheContext);
     case Integer:
     case LongInt:
-        return Type::getInt32Ty(TheContext);
+        return IntegerType::getInt32Ty(TheContext);
     case Char:
         return Type::getInt8Ty(TheContext);
     case Custom:
@@ -103,7 +104,7 @@ int getPrecedence(OperEnum &op)
     case ADD:
     case SUB:
         return 1;
-    case MULT:
+    case MUL:
     case DIV:
     case MOD:
         return 2;
@@ -129,24 +130,29 @@ int getPrecedence(OperEnum &op)
 
 Value *ProgramExprAST::codegen()
 {
+    std::cout << "program" << std::endl;
     PrototypeAST("writeln", {"x"}, {Integer}, Integer).codegen();
 
     Builder.SetInsertPoint(mainBlock);
     Declarations->codegen();
+    Builder.SetInsertPoint(mainBlock);
     MainBlock->codegen();
 
     Builder.CreateRet(NumberExprAST(0).codegen());
 
     WriteFile(Name);
+    return Constant::getNullValue(IntegerType::getInt32Ty(TheContext));
 }
 
 Value *NumberExprAST::codegen()
 {
+    std::cout << "number" << std::endl;
     return getNumberValue(Val, type);
 }
 
 Value *StringExprAST::codegen()
 {
+    std::cout << "string" << std::endl;
     return Builder.CreateGlobalStringPtr(StringRef(Val));
 }
 
@@ -161,6 +167,7 @@ Value *ExprListAST::codegen()
 
 Value *ConstExprAST::codegen()
 {
+    std::cout << "const" << std::endl;
     Value *alloca = ConstValues[Name];
     if (alloca)
         throw("Constant redeclaration");
@@ -172,6 +179,7 @@ Value *ConstExprAST::codegen()
 
 Value *DeclareExprAST::codegen()
 {
+    std::cout << "declare" << std::endl;
     std::string sugar = Name + '/' + Builder.GetInsertBlock()->getParent()->getName().str();
     std::cerr << "Declare sugar:" << sugar << std::endl;
     Value *alloca = NamedValues[sugar];
@@ -191,6 +199,7 @@ Value *DeclareExprAST::codegen()
 
 Value *VariableExprAST::codegen()
 {
+    std::cout << "variable" << std::endl;
     std::string sugar = Name + '/' + Builder.GetInsertBlock()->getParent()->getName().str();
     std::cerr << "Variable sugar:" << sugar << std::endl;
 
@@ -204,6 +213,7 @@ Value *VariableExprAST::codegen()
 
 Value *ArrayExprAST::codegen()
 {
+    std::cout << "array" << std::endl;
     std::string sugar = Name + '/' + Builder.GetInsertBlock()->getParent()->getName().str();
     std::cerr << "Array sugar:" << sugar << std::endl;
     Value *V = NamedValues[sugar];
@@ -215,6 +225,7 @@ Value *ArrayExprAST::codegen()
 
 Value *BinaryExprAST::codegen()
 {
+    std::cout << "binary" << std::endl;
     // Special case '=' because we don't want to emit the LHS as an expression.
     if (Op == ASSIGN)
     {
@@ -247,7 +258,7 @@ Value *BinaryExprAST::codegen()
         return Builder.CreateAdd(L, R, "addtmp");
     case SUB:
         return Builder.CreateSub(L, R, "subtmp");
-    case MULT:
+    case MUL:
         return Builder.CreateMul(L, R, "multmp");
     case DIV:
         return Builder.CreateSDiv(L, R, "divtmp");
@@ -288,6 +299,7 @@ Value *BinaryExprAST::codegen()
 
 Value *CallExprAST::codegen()
 {
+    std::cout << "call" << std::endl;
     // Look up the name in the global module table.
     Function *CalleeF = TheModule->getFunction(Callee);
     if (!CalleeF)
@@ -310,17 +322,24 @@ Value *CallExprAST::codegen()
 
 Value *LibraryExprAST::codegen()
 {
-    std::string sugar = Arg + '/' + Builder.GetInsertBlock()->getParent()->getName().str();
-    std::cerr << "Library sugar:" << sugar << std::endl;
-    auto ptr = NamedValues[sugar];
-    if (!ptr)
-        return nullptr;
+    std::cout << "library" << std::endl;
+    std::vector<Value *> ArgsV;
+    std::string block = '/' + Builder.GetInsertBlock()->getParent()->getName().str();
+    for (unsigned i = 0, e = Args.size(); i != e; ++i)
+    {
+        std::string sugar = Args[i] + block;
+        auto ptr = NamedValues[sugar];
+        if (!ptr)
+            return nullptr;
+        ArgsV.push_back(ptr);
+    }
     auto func = Library[Name];
-    return Builder.CreateCall(func, ptr);
+    return Builder.CreateCall(func, ArgsV);
 }
 
 Function *PrototypeAST::codegen()
 {
+    std::cout << "prototype" << std::endl;
     std::vector<Type *> ParamTypes;
     for (int i = 0; i < Types.size(); i++)
         ParamTypes.push_back(getType(Types[i]));
@@ -338,6 +357,7 @@ Function *PrototypeAST::codegen()
 
 Function *FunctionAST::codegen()
 {
+    std::cout << "function" << std::endl;
     // First, check for an existing function from a previous 'extern' declaration.
     Function *TheFunction = TheModule->getFunction(Proto->Name);
 
@@ -394,6 +414,7 @@ Function *FunctionAST::codegen()
 
 Value *ReturnExprAST::codegen()
 {
+    std::cout << "return" << std::endl;
     Function *TheFunction = TheModule->getFunction(Builder.GetInsertPoint()->getParent()->getName());
     std::string sugar = TheFunction->getName().str() + '/' + Builder.GetInsertBlock()->getParent()->getName().str();
     Value *Alloca = NamedValues[sugar];
@@ -410,6 +431,7 @@ Value *ReturnExprAST::codegen()
 
 Value *ForExprAST::codegen()
 {
+    std::cout << "for" << std::endl;
     Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
     // Create an alloca for the variable in the entry block.
@@ -503,6 +525,7 @@ Value *ForExprAST::codegen()
 
 Value *IfExprAST::codegen()
 {
+    std::cout << "if" << std::endl;
     Value *CondV = Cond->codegen();
     if (!CondV)
         return nullptr;
@@ -552,6 +575,7 @@ Value *IfExprAST::codegen()
 
 Value *RepeatExprAST::codegen()
 {
+    std::cout << "repeat" << std::endl;
     Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
     // Make the new basic block for the loop header, inserting after current
@@ -588,6 +612,7 @@ Value *RepeatExprAST::codegen()
 
 Value *WhileExprAST::codegen()
 {
+    std::cout << "while" << std::endl;
     Function *TheFunction = Builder.GetInsertBlock()->getParent();
 
     // Make the new basic block for the loop header, inserting after current
