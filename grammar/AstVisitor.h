@@ -17,6 +17,10 @@ public:
 
     std::any visitProgram(ObjectPascalParser::ProgramContext *ctx) override;
 
+    std::any visitDeclSection(ObjectPascalParser::DeclSectionContext *ctx) override;
+
+    std::any visitCompoundStmt(ObjectPascalParser::CompoundStmtContext *ctx) override;
+
     std::any visitStmtList(ObjectPascalParser::StmtListContext *ctx) override;
 
     std::any visitStatement(ObjectPascalParser::StatementContext *ctx) override;
@@ -31,7 +35,13 @@ public:
 
     std::any visitConditionalStmt(ObjectPascalParser::ConditionalStmtContext *ctx) override;
 
-    std::any visitLoopStmt(ObjectPascalParser::LoopStmtContext *ctx) override;
+    std::any visitIfStmt(ObjectPascalParser::IfStmtContext *ctx) override;
+
+    std::any visitWhileStmt(ObjectPascalParser::WhileStmtContext *ctx) override;
+
+    std::any visitForStmt(ObjectPascalParser::ForStmtContext *ctx) override;
+
+    std::any visitRepeatStmt(ObjectPascalParser::RepeatStmtContext *ctx) override;
 
     std::any visitConstSection(ObjectPascalParser::ConstSectionContext *ctx) override;
 
@@ -51,11 +61,25 @@ public:
 
     std::any visitFunctionHeading(ObjectPascalParser::FunctionHeadingContext *ctx) override;
 
-    std::any visitTypeSection(ObjectPascalParser::TypeSectionContext *ctx) override;
+    //std::any visitTypeSection(ObjectPascalParser::TypeSectionContext *ctx) override;
 
     std::any visitBlock(ObjectPascalParser::BlockContext *ctx) override;
 
     std::any visitIdentList(ObjectPascalParser::IdentListContext *ctx) override;
+
+    std::any visitExprList(ObjectPascalParser::ExprListContext *ctx) override;
+
+    std::any visitExpression(ObjectPascalParser::ExpressionContext *ctx) override;
+
+    std::any visitTerm(ObjectPascalParser::TermContext *ctx) override;
+
+    std::any visitFactor(ObjectPascalParser::FactorContext *ctx) override;
+
+    std::any visitSimpleGrouped(ObjectPascalParser::SimpleGroupedContext *ctx) override;
+
+    std::any visitSimpleExpression(ObjectPascalParser::SimpleExpressionContext *ctx) override;
+
+    std::any visitDesignator(ObjectPascalParser::DesignatorContext *ctx) override;
 
     std::any visitFormalParameters(ObjectPascalParser::FormalParametersContext *ctx) override;
 

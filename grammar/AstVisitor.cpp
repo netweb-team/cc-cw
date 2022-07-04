@@ -4,7 +4,12 @@
 std::any AstVisitor::visitGoal(ObjectPascalParser::GoalContext *ctx)
 {
     if (ctx->program())
-        return visitProgram(ctx->program());
+    {
+        ExprAST *program = std::any_cast<ExprAST *>(visitProgram(ctx->program()));
+        program->codegen();
+        delete program;
+        return true;
+    }
     return visitChildren(ctx);
 }
 
@@ -16,17 +21,37 @@ std::any AstVisitor::visitProgram(ObjectPascalParser::ProgramContext *ctx)
         auto d = std::any_cast<ExprAST *>(visitDeclSection(decl));
         decls.push_back(d);
     }
-    ExprListAST *section = new ExprListAST(decls);
-    ExprListAST *stmts = std::any_cast<ExprListAST *>(visitCompoundStmt(ctx->compoundStmt()));
-    return new ProgramExprAST(ctx->Identifier()->getText(), section, stmts);
+    ExprAST *section = new ExprListAST(decls);
+    ExprAST *stmts = std::any_cast<ExprAST *>(visitCompoundStmt(ctx->compoundStmt()));
+    ExprAST *result = new ProgramExprAST(ctx->Identifier()->getText(), section, stmts);
+    return result;
+}
+
+std::any AstVisitor::visitDeclSection(ObjectPascalParser::DeclSectionContext *ctx)
+{
+    if (ctx->constSection())
+        return visitConstSection(ctx->constSection());
+    else if (ctx->varSection())
+        return visitVarSection(ctx->varSection());
+    else if (ctx->procedureDeclSection())
+        return visitProcedureDeclSection(ctx->procedureDeclSection());
+    return visitChildren(ctx);
+}
+
+std::any AstVisitor::visitCompoundStmt(ObjectPascalParser::CompoundStmtContext *ctx)
+{
+    return visitStmtList(ctx->stmtList());
 }
 
 std::any AstVisitor::visitStmtList(ObjectPascalParser::StmtListContext *ctx)
 {
     std::vector<ExprAST *> stmts;
     for (auto s : ctx->statement())
+    {
         stmts.push_back(std::any_cast<ExprAST *>(visitStatement(s)));
-    return new ExprListAST(stmts);
+    }
+    ExprAST *result = new ExprListAST(stmts);
+    return result;
 }
 
 std::any AstVisitor::visitStatement(ObjectPascalParser::StatementContext *ctx)
@@ -49,12 +74,31 @@ std::any AstVisitor::visitSimpleStatement(ObjectPascalParser::SimpleStatementCon
 
 std::any AstVisitor::visitAssignmentStmt(ObjectPascalParser::AssignmentStmtContext *ctx)
 {
-
+    ExprAST *design = std::any_cast<ExprAST *>(visitDesignator(ctx->designator()));
+    ExprAST *expr = std::any_cast<ExprAST *>(visitExpression(ctx->expression()));
+    ExprAST *result = new BinaryExprAST(ASSIGN, design, expr);
+    return result;
 }
 
 std::any AstVisitor::visitProcedureCall(ObjectPascalParser::ProcedureCallContext *ctx)
 {
-    
+    // TODO: do something with qualId
+    std::string name = ctx->qualId()->unitId()->Identifier()[0]->getText();
+    std::vector<ExprAST *> args;
+    if (ctx->exprList())
+        args = std::any_cast<std::vector<ExprAST *>>(visitExprList(ctx->exprList()));
+
+    ExprAST *result;
+    if (Library[name])
+    {
+        std::vector<std::string> argnames;
+        for (auto arg : args)
+            argnames.push_back(dynamic_cast<VariableExprAST*>(arg)->getName());
+        result = new LibraryExprAST(name, argnames);
+    }
+    else
+        result = new CallExprAST(name, args);
+    return result;
 }
 
 std::any AstVisitor::visitStructStmt(ObjectPascalParser::StructStmtContext *ctx)
@@ -70,12 +114,56 @@ std::any AstVisitor::visitStructStmt(ObjectPascalParser::StructStmtContext *ctx)
 
 std::any AstVisitor::visitConditionalStmt(ObjectPascalParser::ConditionalStmtContext *ctx)
 {
-
+    if (ctx->ifStmt())
+        return visitIfStmt(ctx->ifStmt());
+    return visitChildren(ctx);
 }
 
-std::any AstVisitor::visitLoopStmt(ObjectPascalParser::LoopStmtContext *ctx)
+std::any AstVisitor::visitIfStmt(ObjectPascalParser::IfStmtContext *ctx)
 {
+    ExprAST *cond, *then, *els, *result;
+    cond = std::any_cast<ExprAST *>(visitExpression(ctx->expression()));
+    then = std::any_cast<ExprAST *>(visitStatement(ctx->statement()[0]));
+    if (ctx->statement().size() > 1)
+        els = std::any_cast<ExprAST *>(visitStatement(ctx->statement()[1]));
+    else
+        els = new NumberExprAST(0);
+    result = new IfExprAST(cond, then, els);
+    return result;
+}
 
+std::any AstVisitor::visitWhileStmt(ObjectPascalParser::WhileStmtContext *ctx)
+{
+    ExprAST *cond, *body, *result;
+    cond = std::any_cast<ExprAST *>(visitExpression(ctx->expression()));
+    body = std::any_cast<ExprAST *>(visitStatement(ctx->statement()));
+    result = new WhileExprAST(cond, body);
+    return result;
+}
+
+std::any AstVisitor::visitRepeatStmt(ObjectPascalParser::RepeatStmtContext *ctx)
+{
+    ExprAST *cond, *body, *result;
+    cond = std::any_cast<ExprAST *>(visitExpression(ctx->expression()));
+    body = std::any_cast<ExprAST *>(visitStmtList(ctx->stmtList()));
+    result = new RepeatExprAST(cond, body);
+    return result;
+}
+
+std::any AstVisitor::visitForStmt(ObjectPascalParser::ForStmtContext *ctx)
+{
+    ExprAST *start, *end, *step, *body, *result;
+    // TODO: do something with qualId
+    std::string var = ctx->qualId()->unitId()->Identifier()[0]->getText();
+    start = std::any_cast<ExprAST *>(visitExpression(ctx->expression()[0]));
+    end = std::any_cast<ExprAST *>(visitExpression(ctx->expression()[1]));
+    if (ctx->TO())
+        step = new NumberExprAST(1);
+    else if (ctx->DOWNTO())
+        step = new NumberExprAST(-1);
+    body = std::any_cast<ExprAST *>(visitStatement(ctx->statement()));
+    result = new ForExprAST(var, start, end, step, body);
+    return result;
 }
 
 std::any AstVisitor::visitConstSection(ObjectPascalParser::ConstSectionContext *ctx)
@@ -83,7 +171,8 @@ std::any AstVisitor::visitConstSection(ObjectPascalParser::ConstSectionContext *
     std::vector<ExprAST *> consts;
     for (auto s : ctx->constantDecl())
         consts.push_back(std::any_cast<ExprAST *>(visitConstantDecl(s)));
-    return new ExprListAST(consts);
+    ExprAST *result = new ExprListAST(consts);
+    return result;
 }
 
 std::any AstVisitor::visitConstantDecl(ObjectPascalParser::ConstantDeclContext *ctx)
@@ -95,7 +184,8 @@ std::any AstVisitor::visitConstantDecl(ObjectPascalParser::ConstantDeclContext *
         const double d = std::any_cast<double>(visitConstExpr(ctx->constExpr()));
         if (d != (long int) d)
             t = Double;
-        return new ConstExprAST(ctx->Identifier()->getText(), d, t);
+        ExprAST *result = new ConstExprAST(ctx->Identifier()->getText(), d, t);
+        return result;
     }
     return visitChildren(ctx);
 }
@@ -133,7 +223,9 @@ std::any AstVisitor::visitVarSection(ObjectPascalParser::VarSectionContext *ctx)
     std::vector<ExprAST *> vars;
     for (auto v : ctx->varDecl())
         vars.push_back(std::any_cast<ExprAST *>(visitVarDecl(v)));
-    return new ExprListAST(vars);
+
+    ExprAST *result = new ExprListAST(vars);
+    return result;
 }
 
 std::any AstVisitor::visitVarDecl(ObjectPascalParser::VarDeclContext *ctx)
@@ -144,17 +236,19 @@ std::any AstVisitor::visitVarDecl(ObjectPascalParser::VarDeclContext *ctx)
     // TODO: get typename
     TypeName t = Integer;
     for (auto id : ids)
-        vars.push_back(new DeclareExprAST(id));
-    return new ExprListAST(vars);
+        vars.push_back(new DeclareExprAST(id, t));
+    ExprAST *result = new ExprListAST(vars);
+    return result;
 }
 
 std::any AstVisitor::visitProcedureDecl(ObjectPascalParser::ProcedureDeclContext *ctx)
 {
     PrototypeAST *proto = std::any_cast<PrototypeAST *>(visitProcedureHeading(ctx->procedureHeading()));
     std::vector<ExprAST *> body;
-    body.push_back(std::any_cast<ExprListAST *>(visitBlock(ctx->block())));
+    body.push_back(std::any_cast<ExprAST *>(visitBlock(ctx->block())));
     body.push_back(new NumberExprAST(0));
-    return new FunctionAST(proto, body);
+    ExprAST *result = new FunctionAST(proto, body);
+    return result;
 }
 
 std::any AstVisitor::visitFunctionDecl(ObjectPascalParser::FunctionDeclContext *ctx)
@@ -162,9 +256,10 @@ std::any AstVisitor::visitFunctionDecl(ObjectPascalParser::FunctionDeclContext *
     PrototypeAST *proto = std::any_cast<PrototypeAST *>(visitFunctionHeading(ctx->functionHeading()));
     std::vector<ExprAST *> body;
     body.push_back(new DeclareExprAST(proto->Name, proto->ReturnType));
-    body.push_back(std::any_cast<ExprListAST *>(visitBlock(ctx->block())));
+    body.push_back(std::any_cast<ExprAST *>(visitBlock(ctx->block())));
     body.push_back(new VariableExprAST(proto->Name));
-    return new FunctionAST(proto, body);
+    ExprAST *result = new FunctionAST(proto, body);
+    return result;
 }
 
 std::any AstVisitor::visitProcedureHeading(ObjectPascalParser::ProcedureHeadingContext *ctx)
@@ -178,7 +273,8 @@ std::any AstVisitor::visitProcedureHeading(ObjectPascalParser::ProcedureHeadingC
         argnames.push_back(arg.first);
         argtypes.push_back(arg.second);
     }
-    return new PrototypeAST(name, argnames, argtypes);
+    ExprAST *result = new PrototypeAST(name, argnames, argtypes);
+    return result;
 }
 
 std::any AstVisitor::visitFunctionHeading(ObjectPascalParser::FunctionHeadingContext *ctx)
@@ -193,16 +289,18 @@ std::any AstVisitor::visitFunctionHeading(ObjectPascalParser::FunctionHeadingCon
         argtypes.push_back(arg.second);
     }
     // TODO: get return type instead of integer
-    return new PrototypeAST(name, argnames, argtypes, Integer);
+    ExprAST *result = new PrototypeAST(name, argnames, argtypes, Integer);
+    return result;
 }
 
 std::any AstVisitor::visitBlock(ObjectPascalParser::BlockContext *ctx)
 {
-    std::vector<ExprAST *> result;
+    std::vector<ExprAST *> block;
     if (ctx->declSection())
-        result.push_back(std::any_cast<ExprAST *>(visitDeclSection(ctx->declSection())));
-    result.push_back(std::any_cast<ExprAST *>(visitCompoundStmt(ctx->compoundStmt())));
-    return new ExprListAST(result);
+        block.push_back(std::any_cast<ExprAST *>(visitDeclSection(ctx->declSection())));
+    block.push_back(std::any_cast<ExprAST *>(visitCompoundStmt(ctx->compoundStmt())));
+    ExprAST *result = new ExprListAST(block);
+    return result;
 }
 
 std::any AstVisitor::visitIdentList(ObjectPascalParser::IdentListContext *ctx)
@@ -210,6 +308,135 @@ std::any AstVisitor::visitIdentList(ObjectPascalParser::IdentListContext *ctx)
     std::vector<std::string> result;
     for (auto id : ctx->Identifier())
         result.push_back(id->getText());
+    return result;
+}
+
+std::any AstVisitor::visitExprList(ObjectPascalParser::ExprListContext *ctx)
+{
+    std::vector<ExprAST *> result;
+    for (auto e : ctx->expression())
+    {
+        result.push_back(std::any_cast<ExprAST *>(visitExpression(e)));
+    }
+    return result;
+}
+
+std::any AstVisitor::visitExpression(ObjectPascalParser::ExpressionContext *ctx)
+{
+    std::vector<ExprAST *> operands;
+    std::vector<std::string> operators;
+    for (auto op : ctx->simpleGrouped())
+        operands.push_back(std::any_cast<ExprAST *>(visitSimpleGrouped(op)));
+    for (auto sign : ctx->relOp())
+        operators.push_back(sign->getText());
+    while (operands.size() > 1)
+    {
+        OperEnum op;
+        if (operators[0] == ">")
+            op = GT;
+        else if (operators[0] == "<")
+            op = LT;
+        else if (operators[0] == "<=")
+            op = LE;
+        else if (operators[0] == ">=")
+            op = GE;
+        else if (operators[0] == "<>")
+            op = NE;
+        else if (operators[0] == "=")
+            op = EQ;
+        operands[1] = new BinaryExprAST(op, operands[0], operands[1]);
+        operands.erase(operands.begin());
+        operators.erase(operators.begin());
+    }
+    return operands[0];
+}
+
+std::any AstVisitor::visitSimpleGrouped(ObjectPascalParser::SimpleGroupedContext *ctx)
+{
+    return visitSimpleExpression(ctx->simpleExpression());
+}
+
+std::any AstVisitor::visitSimpleExpression(ObjectPascalParser::SimpleExpressionContext *ctx) 
+{
+    std::vector<ExprAST *> operands;
+    std::vector<std::string> operators;
+
+    for (auto t : ctx->term())
+        operands.push_back(std::any_cast<ExprAST *>(visitTerm(t)));
+    if (ctx->MINUS())
+        operands[0] = new BinaryExprAST(MUL, operands[0], new NumberExprAST(-1));
+    for (auto sign : ctx->addOp())
+        operators.push_back(sign->getText());
+    while (operands.size() > 1)
+    {
+        OperEnum op;
+        if (operators[0] == "+")
+            op = ADD;
+        else if (operators[0] == "-")
+            op = SUB;
+        else if (operators[0] == "or")
+            op = OR;
+        operands[1] = new BinaryExprAST(op, operands[0], operands[1]);
+        operands.erase(operands.begin());
+        operators.erase(operators.begin());
+    }
+    return operands[0];
+}
+
+std::any AstVisitor::visitTerm(ObjectPascalParser::TermContext *ctx) 
+{
+    std::vector<ExprAST *> operands;
+    std::vector<std::string> operators;
+    for (auto f : ctx->factor())
+        operands.push_back(std::any_cast<ExprAST *>(visitFactor(f)));
+    for (auto sign : ctx->mulOp())
+        operators.push_back(sign->getText());
+    while (operands.size() > 1)
+    {
+        OperEnum op;
+        if (operators[0] == "*")
+            op = MUL;
+        else if (operators[0] == "div")
+            op = DIV;
+        else if (operators[0] == "mod")
+            op = MOD;
+        else if (operators[0] == "and")
+            op = AND;
+        operands[1] = new BinaryExprAST(op, operands[0], operands[1]);
+        operands.erase(operands.begin());
+        operators.erase(operators.begin());
+    }
+    return operands[0];
+}
+
+std::any AstVisitor::visitFactor(ObjectPascalParser::FactorContext *ctx)
+{
+    if (ctx->number())
+        return visitNumber(ctx->number());
+    else if (ctx->string())
+        return visitString(ctx->string());
+    else if (ctx->expression())
+        return visitExpression(ctx->expression());
+    else if (ctx->designator())
+        return visitDesignator(ctx->designator());
+    // TODO: visit another expressions
+    return visitChildren(ctx);
+}
+
+std::any AstVisitor::visitDesignator(ObjectPascalParser::DesignatorContext *ctx)
+{
+    // TODO: do something with qualId
+    std::string name = ctx->qualId()->unitId()->Identifier()[0]->getText();
+    std::vector<ExprAST *> index;
+    ExprAST *result;
+    // TODO: get all exprList
+    if (ctx->exprList().size())
+    {
+        index = std::any_cast<std::vector<ExprAST *>>(visitExprList(ctx->exprList()[0]));
+        result = new ArrayExprAST(name, new ExprListAST(index));
+    }
+    else
+        result = new VariableExprAST(name);
     return result;
 }
 
@@ -230,7 +457,8 @@ std::any AstVisitor::visitParameter(ObjectPascalParser::ParameterContext *ctx)
 std::any AstVisitor::visitString(ObjectPascalParser::StringContext *ctx)
 {
     // TODO::проверить на ковычки и другие лишние вещи
-    return StringExprAST(ctx->StringLiteral()->getText(), String);
+    ExprAST *result = new StringExprAST(ctx->StringLiteral()->getText(), String);
+    return result;
 }
 
 std::any AstVisitor::visitNumber(ObjectPascalParser::NumberContext *ctx)
@@ -245,5 +473,6 @@ std::any AstVisitor::visitNumber(ObjectPascalParser::NumberContext *ctx)
     {
         type = SmallInt;
     }
-    return new NumberExprAST(d, type);
+    ExprAST *result = new NumberExprAST(d, type);
+    return result;
 }
