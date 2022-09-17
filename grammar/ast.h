@@ -116,11 +116,11 @@ public:
 class ConstExprAST : public ExprAST
 {
     std::string Name;
-    double Val;
+    ExprAST *Val;
 
 public:
-    ConstExprAST(const std::string &Name, double Val, TypeName Type = Integer) : Name(Name), Val(Val) { type = Type; }
-    ~ConstExprAST() {}
+    ConstExprAST(const std::string &Name, ExprAST *Val) : Name(Name), Val(Val) {}
+    ~ConstExprAST() { delete Val; }
     Value *codegen() override;
 };
 

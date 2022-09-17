@@ -5,13 +5,17 @@
 
 #include "antlr4-runtime.h"
 #include "libs/ObjectPascalParserBaseVisitor.h"
+#include <unordered_set>
+#include <unordered_map>
+#include <sstream>
+#include <iterator>
 
-/**
- * This class provides an empty implementation of ObjectPascalParserVisitor, which can be
- * extended to create a visitor which only needs to handle a subset of the available methods.
- */
 class AstVisitor : public ObjectPascalParserBaseVisitor
 {
+private:
+    std::unordered_set<std::string> typenames;
+    std::unordered_map<std::string, std::string> vartypes;
+
 public:
     std::any visitGoal(ObjectPascalParser::GoalContext *ctx) override;
 
@@ -61,7 +65,43 @@ public:
 
     std::any visitFunctionHeading(ObjectPascalParser::FunctionHeadingContext *ctx) override;
 
-    //std::any visitTypeSection(ObjectPascalParser::TypeSectionContext *ctx) override;
+    std::any visitTypeSection(ObjectPascalParser::TypeSectionContext *ctx) override;
+
+    std::any visitTypeDecl(ObjectPascalParser::TypeDeclContext *ctx) override;
+
+    std::any visitType(ObjectPascalParser::TypeContext *ctx) override;
+
+    std::any visitSimpleType(ObjectPascalParser::SimpleTypeContext *ctx) override;
+
+    std::any visitOrdinalType(ObjectPascalParser::OrdinalTypeContext *ctx) override;
+
+    std::any visitSubrangeType(ObjectPascalParser::SubrangeTypeContext *ctx) override;
+
+    std::any visitSubrangeType2(ObjectPascalParser::SubrangeType2Context *ctx) override;
+
+    std::any visitSubrangeType3(ObjectPascalParser::SubrangeType3Context *ctx) override;
+
+    std::any visitSubrangeType4(ObjectPascalParser::SubrangeType4Context *ctx) override;
+
+    std::any visitOrdIdent(ObjectPascalParser::OrdIdentContext *ctx) override;
+
+    std::any visitRealType(ObjectPascalParser::RealTypeContext *ctx) override;
+
+    std::any visitStrucType(ObjectPascalParser::StrucTypeContext *ctx) override;
+
+    std::any visitArrayType(ObjectPascalParser::ArrayTypeContext *ctx) override;
+
+    std::any visitRecType(ObjectPascalParser::RecTypeContext *ctx) override;
+
+    std::any visitFieldList(ObjectPascalParser::FieldListContext *ctx) override;
+
+    std::any visitFieldDecl(ObjectPascalParser::FieldDeclContext *ctx) override;
+
+    std::any visitStringType(ObjectPascalParser::StringTypeContext *ctx) override;
+
+    std::any visitProcedureType(ObjectPascalParser::ProcedureTypeContext *ctx) override;
+
+    std::any visitRestrictedType(ObjectPascalParser::RestrictedTypeContext *ctx) override;
 
     std::any visitBlock(ObjectPascalParser::BlockContext *ctx) override;
 
@@ -88,4 +128,12 @@ public:
     std::any visitString(ObjectPascalParser::StringContext *ctx) override;
 
     std::any visitNumber(ObjectPascalParser::NumberContext *ctx) override;
+
+    std::any visitQualId(ObjectPascalParser::QualIdContext *ctx) override;
+
+    std::any visitQualIdList(ObjectPascalParser::QualIdListContext *ctx) override;
+
+    std::any visitTypeId(ObjectPascalParser::TypeIdContext *ctx) override;
+
+    std::any visitUnitId(ObjectPascalParser::UnitIdContext *ctx) override;
 };

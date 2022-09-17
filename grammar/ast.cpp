@@ -10,9 +10,18 @@ std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
 std::map<std::string, Type *> CustomTypes; 
 std::map<std::string, Function *> Library
 {
+    std::make_pair("read",
+                   dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("read", getType(Integer), PointerType::getUnqual(getType(Integer)))
+                                                             .getCallee()))),
     std::make_pair("readln",
                    dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("readln", getType(Integer), PointerType::getUnqual(getType(Integer)))
                                                              .getCallee()))),
+    // std::make_pair("sread",
+    //                dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("sread", getType(Integer), getType(String))
+    //                                                          .getCallee()))),
+    // std::make_pair("sreadln",
+    //                dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("sreadln", getType(Integer), getType(String))
+                                                            //  .getCallee()))),
     std::make_pair("inc",
                    dyn_cast<Function>(dyn_cast<Constant>(TheModule->getOrInsertFunction("inc", getType(Integer), PointerType::getUnqual(getType(Integer)))
                                                              .getCallee()))),
@@ -59,13 +68,14 @@ Type *getType(TypeName t, const std::string& custom)
     case LongInt:
         return IntegerType::getInt32Ty(TheContext);
     case Char:
-        return Type::getInt8Ty(TheContext);
+    case String:
+        return PointerType::getUnqual(Type::getInt8Ty(TheContext));
     case Custom:
         Type *ty = CustomTypes[custom];
         if (ty)
             return ty;
     }
-    throw("Unknown custom typename");
+    throw std::runtime_error("Unknown custom typename");
     return Type::getVoidTy(TheContext);
 }
 
@@ -91,7 +101,7 @@ Value *getNumberValue(double Val, TypeName t)
     case LongInt:
         return ConstantInt::get(TheContext, APInt(32, Val, true));
     default:
-        throw("Unknown type");
+        throw std::runtime_error("Unknown type");
     }
 }
 
@@ -100,7 +110,7 @@ int getPrecedence(OperEnum &op)
     switch (op)
     {
     case ASSIGN:
-        throw("Assign should not have any precedence");
+        throw std::runtime_error("Assign should not have any precedence");
     case ADD:
     case SUB:
         return 1;
@@ -119,7 +129,7 @@ int getPrecedence(OperEnum &op)
     case AND:
         return 4;
     default:
-        throw("Unknown operator precedence");
+        throw std::runtime_error("Unknown operator precedence");
     }
     return 0;
 }
@@ -131,7 +141,10 @@ int getPrecedence(OperEnum &op)
 Value *ProgramExprAST::codegen()
 {
     std::cout << "program" << std::endl;
+    PrototypeAST("write", {"x"}, {Integer}, Integer).codegen();
     PrototypeAST("writeln", {"x"}, {Integer}, Integer).codegen();
+    // PrototypeAST("write", {"x"}, {String}, Integer).codegen();
+    // PrototypeAST("writeln", {"x"}, {String}, Integer).codegen();
 
     Builder.SetInsertPoint(mainBlock);
     Declarations->codegen();
@@ -170,9 +183,9 @@ Value *ConstExprAST::codegen()
     std::cout << "const" << std::endl;
     Value *alloca = ConstValues[Name];
     if (alloca)
-        throw("Constant redeclaration");
+        throw std::runtime_error("Constant redeclaration");
     alloca = Builder.CreateAlloca(getType(type));
-    Builder.CreateStore(getNumberValue(Val, type), alloca);
+    Builder.CreateStore(Val->codegen(), alloca);
     ConstValues[Name] = alloca;
     return alloca;
 }
@@ -184,7 +197,7 @@ Value *DeclareExprAST::codegen()
     std::cerr << "Declare sugar:" << sugar << std::endl;
     Value *alloca = NamedValues[sugar];
     if (alloca)
-        throw("Variable redeclaration.");
+        throw std::runtime_error("Variable redeclaration.");
 
     if (Length)
     {
@@ -207,7 +220,7 @@ Value *VariableExprAST::codegen()
     if (!V)
         V = ConstValues[Name];
     if (!V)
-        throw("Unknown constant/variable name");
+        throw std::runtime_error("Unknown constant/variable name");
     return Builder.CreateLoad(V, Name.c_str());
 }
 
@@ -218,7 +231,7 @@ Value *ArrayExprAST::codegen()
     std::cerr << "Array sugar:" << sugar << std::endl;
     Value *V = NamedValues[sugar];
     if (!V)
-        throw("Unknown array name");
+        throw std::runtime_error("Unknown array name");
     auto ptr = Builder.CreateGEP(getType(type), V, Index->codegen());
     return Builder.CreateLoad(ptr);
 }
@@ -231,7 +244,7 @@ Value *BinaryExprAST::codegen()
     {
         VariableExprAST *LHSE = static_cast<VariableExprAST *>(LHS);
         if (!LHSE)
-            throw("destination of '=' must be a variable");
+            throw std::runtime_error("destination of '=' must be a variable");
         // Codegen the RHS.
         Value *Val = RHS->codegen();
         if (!Val)
@@ -241,7 +254,7 @@ Value *BinaryExprAST::codegen()
         // Value *Variable = NamedValues[LHSE->getName()];
         Value *Variable = LHSE->alloca();
         if (!Variable)
-            throw("Unknown variable name");
+            throw std::runtime_error("Unknown variable name");
 
         Builder.CreateStore(Val, Variable);
         return Val;
@@ -292,7 +305,7 @@ Value *BinaryExprAST::codegen()
     case OR:
         return Builder.CreateOr(L, R, "ortmp");
     default:
-        throw("Unknown operator");
+        throw std::runtime_error("Unknown operator");
     }
     return nullptr;
 }
@@ -303,11 +316,11 @@ Value *CallExprAST::codegen()
     // Look up the name in the global module table.
     Function *CalleeF = TheModule->getFunction(Callee);
     if (!CalleeF)
-        throw("Unknown function referenced");
+        throw std::runtime_error("Unknown function referenced");
 
     // If argument mismatch error.
     if (CalleeF->arg_size() != Args.size())
-        throw("Incorrect # arguments passed");
+        throw std::runtime_error("Incorrect # arguments passed");
 
     std::vector<Value *> ArgsV;
     for (unsigned i = 0, e = Args.size(); i != e; ++i)
@@ -439,7 +452,7 @@ Value *ForExprAST::codegen()
     std::string sugar = VarName + '/' + Builder.GetInsertBlock()->getParent()->getName().str();
     Value *Alloca = NamedValues[sugar];
     if (!Alloca)
-        throw("Unknown variable name in for cycle");
+        throw std::runtime_error("Unknown variable name in for cycle");
 
     // Emit the start code first, without 'variable' in scope.
     Value *StartVal = Start->codegen();
@@ -655,7 +668,7 @@ Value *TypeExprAST::codegen()
     {
         std::string name = Declarations[i]->Name;
         if (CustomTypes[name])
-            throw("Redeclaration of type - already exists");
+            throw std::runtime_error("Redeclaration of type - already exists");
         if (Declarations[i]->type == Custom)
             CustomTypes[name] = StructType::create(TheContext, name);
         else 
@@ -704,7 +717,7 @@ Value *VariableExprAST::alloca(void) const
     std::cout << "sugar: " << sugar << std::endl;
     Value *ret = NamedValues[sugar];
     if (!ret)
-        throw("Unknown variable alloca name");
+        throw std::runtime_error("Unknown variable alloca name");
     return ret;
 }
 
@@ -713,7 +726,7 @@ Value *ArrayExprAST::alloca(void) const
     std::string sugar = Name + '/' + Builder.GetInsertBlock()->getParent()->getName().str();
     Value *V = NamedValues[sugar];
     if (!V)
-        throw("Unknown array name");
+        throw std::runtime_error("Unknown array name");
     auto ptr = Builder.CreateGEP(getType(type), V, Index->codegen());
     return ptr;
 }
