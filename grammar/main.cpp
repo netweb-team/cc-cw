@@ -30,8 +30,10 @@ int main(int argc, const char* argv[]) {
     ObjectPascalParser::GoalContext* tree = parser.goal();
     cout << tree->toStringTree(true) << endl;
     AstVisitor visitor;
-    visitor.visitGoal(tree);
-    //Scene scene = visitor.visitFile(tree).as<Scene>();
-    //scene.draw();
+    try {
+        visitor.visitGoal(tree);
+    } catch (const std::exception& e) {
+        cout << "Error: " << e.what() << endl;
+    }
     return 0;
 }
