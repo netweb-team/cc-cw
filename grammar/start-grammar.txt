@@ -1,0 +1,313 @@
+# Items inside <this> are implementation dependent
+Goal -> (Program | Package | Library | Unit)
+Program -> [PROGRAM Ident ['(' IdentList ')'] ';']
+           ProgramBlock '.'
+Unit -> UNIT QualIdent [PortabilityDirective] ';'
+        InterfaceSection
+        ImplementationSection
+        InitSection '.'
+Package -> PACKAGE Ident ';'
+           [RequiresClause]
+           [ContainsClause]
+           END '.'
+Library -> LIBRARY Ident ';'
+           ProgramBlock '.'
+ProgramBlock -> [UsesClause]
+                [DeclSection]         
+                 CompoundStmt
+UsesClause -> USES QualIdentList ';'
+PortabilityDirective -> PLATFORM
+                     -> DEPRECATED
+                     -> LIBRARY
+InterfaceSection -> INTERFACE
+                    [UsesClause]
+                    [InterfaceDecl]...
+InterfaceDecl -> ConstSection
+              -> TypeSection
+              -> VarSection
+              -> ExportedHeading
+ExportedHeading -> ProcedureHeading ';' [Directive]
+
+                -> FunctionHeading ';' [Directive]
+ImplementationSection -> IMPLEMENTATION
+                         [UsesClause]
+                         [DeclSection]...
+                         [ExportsStmt]...
+Block -> [DeclSection]
+         [ExportsStmt]...
+         CompoundStmt
+         [ExportsStmt]...
+ExportsStmt -> EXPORTS ExportsItem [, ExportsItem]...
+ExportsItem -> Ident [NAME|INDEX "'" ConstExpr "'"]
+                     [INDEX|NAME "'" ConstExpr "'"]
+
+DeclSection -> LabelDeclSection
+            -> ConstSection
+            -> TypeSection
+            -> VarSection
+            -> ProcedureDeclSection
+LabelDeclSection -> LABEL LabelId
+ConstSection -> CONST (ConstantDecl ';' ... )
+ConstantDecl -> Ident '=' ConstExpr [PortabilityDirective]
+             -> Ident ':' TypeId '=' TypedConstant [PortabilityDirective]
+TypeSection -> TYPE (TypeDecl ';' ...) 
+TypeDecl -> Ident '=' [TYPE] Type [PortabilityDirective]
+
+         -> Ident '=' [TYPE] RestrictedType [PortabilityDirective]
+TypedConstant -> (ConstExpr | ArrayConstant | RecordConstant)
+ArrayConstant -> '(' TypedConstant [ ',' TypedConstant ...] ')'
+RecordConstant -> '(' RecordFieldConstant ';'... ')'
+RecordFieldConstant -> Ident ':' TypedConstant
+Type -> TypeId
+     -> SimpleType
+     -> StrucType
+     -> PointerType
+     -> StringType 
+     -> ProcedureType
+     -> VariantType
+     -> ClassRefType
+
+RestrictedType -> ObjectType
+               -> ClassType
+               -> InterfaceType
+ClassRefType -> CLASS OF TypeId
+SimpleType -> (OrdinalType | RealType)
+RealType -> REAL48
+         -> REAL
+         -> SINGLE
+         -> DOUBLE
+         -> EXTENDED
+         -> CURRENCY
+         -> COMP
+OrdinalType -> (SubrangeType | EnumeratedType | OrdIdent)
+OrdIdent -> SHORTINT
+         -> SMALLINT
+         -> INTEGER
+         -> BYTE
+         -> CARDINAL
+         -> LONGINT
+         -> INT64
+         -> WORD
+         -> BOOLEAN
+         -> CHAR
+         -> WIDECHAR
+         -> LONGWORD
+         -> PCHAR
+VariantType -> VARIANT
+            -> OLEVARIANT
+SubrangeType -> ConstExpr '..' ConstExpr
+EnumeratedType -> '(' EnumeratedTypeElement ','... ')'
+EnumeratedTypeElement -> Ident [ '=' ConstExpr ]
+StringType -> STRING
+           -> ANSISTRING
+           -> WIDESTRING
+           -> UNICODESTRING-
+           -> STRING '['  ConstExpr ']' 
+StrucType -> [PACKED] (ArrayType | SetType | FileType | RecType [PACKED])
+ArrayType -> ARRAY ['[' OrdinalType [ ',' OrdinalType...] ']'] OF Type [PortabilityDirective]
+RecType -> RECORD [FieldList] END [PortabilityDirective] 
+FieldList -> FieldDecl ';'... [VariantSection] [';']
+FieldDecl -> IdentList ':' Type [PortabilityDirective]
+VariantSection -> CASE [Ident ':'] TypeId OF (RecVariant [(';' RecVariant ...)]
+RecVariant -> ConstExpr ','... ':' '(' [FieldList] ')'
+SetType -> SET OF OrdinalType [PortabilityDirective]
+FileType -> FILE OF TypeId [PortabilityDirective]
+PointerType -> '^' TypeId [PortabilityDirective]
+ProcedureType -> (ProcedureHeading | FunctionHeading) [OF OBJECT]
+VarSection -> VAR (VarDecl ';' ...)
+VarDecl  On Windows -> IdentList ':' Type [(ABSOLUTE (Ident | ConstExpr)) | '=' ConstExpr] [PortabilityDirective]
+         On Linux   -> IdentList ':' Type [ABSOLUTE (Ident) | '=' ConstExpr] [PortabilityDirective]
+Expression -> (SimpleGrouped [RelOp SimpleGrouped ...]
+SimpleGrouped -> SimpleExpression |'(' SimpleExpression ')'
+SimpleExpression -> ['+' | '-'] Term [AddOp Term]...
+Term -> Factor [MulOp Factor]...
+Factor -> Designator ['(' ExprList ')']
+       -> '@' Designator
+       -> Number
+       -> String 
+       -> OneChar
+       -> NIL
+       -> '(' Expression ')'
+       -> NOT Factor
+       -> SetConstructor
+       -> TypeId '(' Expression ')'
+RelOp -> '>'
+      -> '<'
+      -> '<='
+      -> '>='
+      -> '<>'
+
+      -> IN
+      -> IS
+      -> AS
+AddOp -> '+'
+      -> '-'
+      -> OR
+      -> XOR
+MulOp -> '*'
+      -> '/'
+      -> DIV
+      -> MOD
+      -> AND
+      -> SHL
+      -> SHR
+AdditiveOp -> + | - | * 
+Designator -> QualId ['.' Ident | '[' ExprList ']' | '^']...
+SetConstructor -> '[' [SetElement [',' SetElement  ...] ']'
+SetElement -> Expression ['..' Expression]
+ExprList -> Expression [',' Expression ...]
+Statement -> [LabelId ':'] [SimpleStatement | StructStmt]
+StmtList -> Statement [';' Statement ...]
+SimpleStatement -> ProcedureCall           
+                -> AssignmentStmt 
+                -> INHERITED
+                -> GOTO LabelId
+StructStmt -> CompoundStmt
+           -> ConditionalStmt
+           -> LoopStmt
+           -> WithStmt
+           -> TryExceptStmt
+           -> TryFinallyStmt
+           -> RaiseStmt
+           -> AssemblerStmt
+CompoundStmt -> BEGIN StmtList [;] END
+ConditionalStmt -> IfStmt
+                -> CaseStmt
+ProcedureCall -> QualId ['(' [ExprList] ')']
+AssignmentStmt -> Designator ':=' Expression
+IfStmt -> IF Expression THEN Statement [ELSE Statement]
+CaseStmt -> CASE Expression OF (CaseSelector [';' CaseSelector ...]) [ELSE StmtList] [';'] END
+CaseSelector -> CaseLabel ','... ':' Statement
+CaseLabel -> ConstExpr ['..' ConstExpr]
+LoopStmt -> RepeatStmt
+         -> WhileStmt
+         -> ForStmt
+RepeatStmt -> REPEAT StmtList [';'] UNTIL Expression
+WhileStmt -> WHILE Expression DO Statement
+ForStmt -> FOR QualId ':=' Expression (TO | DOWNTO) Expression DO Statement
+
+WithStmt -> WITH QualIdentList DO Statement
+TryExceptStmt -> TRY
+                   Statement [';' Statement ...]
+                 EXCEPT
+                   ExceptionBlock
+                 END
+ExceptionBlock -> [[ON [Ident ':'] TypeID DO Statement] [(';' ON [Ident ':'] TypeID DO Statement) ...]
+                  [ELSE Statement...] [';']
+TryFinallyStmt -> TRY
+                   Statement
+                  FINALLY
+                   Statement [';']
+                  END
+RaiseStmt -> RAISE [object] [AT address]
+
+AssemblerStatement -> ASM
+                   -> <assemblylanguage>
+                   -> END
+ProcedureDeclSection -> ProcedureDecl
+                     -> FunctionDecl
+ProcedureDecl -> ProcedureHeading ';' [Directive] [PortabilityDirective]
+                 Block ';'
+FunctionDecl -> FunctionHeading ';' [Directive] [PortabilityDirective]
+                Block ';'
+FunctionHeading -> FUNCTION Ident [FormalParameters] ':' (SimpleType | STRING)
+
+ProcedureHeading -> PROCEDURE Ident [FormalParameters]
+FormalParameters -> '(' [FormalParm ';'...] ')'
+FormalParm -> [VAR | CONST | OUT] Parameter
+Parameter -> IdentList [':' ([ARRAY OF] SimpleType | STRING | FILE)]
+          -> Ident ':' SimpleType '=' ConstExpr
+Directive -> CDECL
+          -> REGISTER
+          -> DYNAMIC
+          -> VIRTUAL
+          -> EXPORT
+          -> ExternalDirective
+          -> NEAR
+          -> FAR
+          -> FORWARD
+          -> INLINE
+          -> ASSEMBLER
+          -> MESSAGE ConstExpr
+          -> OVERRIDE
+          -> OVERLOAD
+          -> PASCAL
+          -> REINTRODUCE
+          -> SAFECALL
+          -> STDCALL
+          -> VARARGS
+          -> LOCAL
+          -> ABSTRACT
+ExternalDirective -> EXTERNAL [ String [ NAME Ident*]] 
+ObjectType -> OBJECT [ObjHeritage] [ObjFieldList] [MethodList] END
+ObjHeritage -> '(' QualId ')'
+MethodList -> (MethodHeading [';' VIRTUAL [';' ABSTRACT]]) ';'...
+MethodHeading -> [CLASS] (ProcedureHeading |FunctionHeading)
+              -> ConstructorHeading
+              -> DestructorHeading
+ConstructorHeading -> CONSTRUCTOR Ident [FormalParameters]
+DestructorHeading -> DESTRUCTOR Ident [FormalParameters]
+ObjFieldList -> (IdentList ':' Type) ';' 
+InitSection -> INITIALIZATION StmtList [FINALIZATION StmtList] END
+            -> BEGIN StmtList END
+            -> END
+ClassType -> CLASS [ClassHeritage]
+             [ClassVisibility]
+             [ClassFieldList]
+
+             [ClassMethodList]
+             [ClassPropertyList]
+             END
+ClassHeritage -> '(' IdentList ')'
+ClassVisibility -> [PUBLIC | PROTECTED | PRIVATE | PUBLISHED]
+ClassFieldList -> (ClassVisibility ObjFieldList) ';'...
+ClassMethodList -> (ClassVisibility MethodList) ';'...
+ClassPropertyList -> (ClassVisibility PropertyList ';')...
+PropertyList -> PROPERTY Ident [PropertyInterface] [PropertySpecifiers]    [PortabilityDirective]
+
+PropertyInterface -> [PropertyParameterList] ':' Ident
+PropertyParameterList -> '[' (IdentList ':' TypeId) ';'... ']'
+PropertySpecifiers -> [INDEX ConstExpr]
+                      [READ Ident]
+                      [WRITE Ident]
+                      [STORED (Ident | Constant)]
+                      [(DEFAULT ConstExpr) | NODEFAULT]
+                      [IMPLEMENTS TypeId]
+InterfaceType -> INTERFACE [InterfaceHeritage]
+                 [ClassMethodList]
+
+                 [ClassPropertyList]                 ...
+                 END
+InterfaceHeritage -> '(' Ident ')'
+RequiresClause -> REQUIRES IdentList... ';'
+ContainsClause -> CONTAINS IdentList... ';'
+IdentList -> Ident [',' ident ] ...
+QualId -> [UnitId '.'] ['.' Ident ['^'] ...] 
+TypeId -> [UnitId '.'] <type-identifier>
+Ident* -> <Case-Sensitive> Ident
+Ident -> IdentStart [  AlphaNum ... ]
+IdentStart -> {AlphaUC | AlphaLC | Underscore)
+AlphaNum -> {IdentStart | Digit)
+AlphaUC -> ( 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 
+            'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' |  
+            'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z')
+AlphaLC ->  ('a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' |  
+            'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 
+            's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' |'z')
+Underscore -> '_' 
+OneChar -> (Char |'''' (<character (except quote)> | Quote) ''''
+Char -> '^'(AlphaUC|AlphaLC)|'#'(Integer|RadixNumber)
+Digit -> ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9')               
+ConstExpr -> (number | string | Char | Integer AdditiveOp Integer)
+UnitId -> ident | ident'.'ident 
+LabelId -> Ident | Integer
+String -> (Char ...  ['''' [(<character (except quote)> | Quote) ...] '''' ) ... | 
+          ([Char ...] ''''[(<character (except quote)> | Quote) ...] '''' [Char ...] ) | 
+          (''''[(<character (except quote)> | Quote) ...] '''' Char )...] )
+Number -> SignedInteger ['.' Integer ['E' SignedInteger] ] | RadixNumber
+RadixNumber -> $HexNumber | &OctalNumber 
+HexNumber -> ( Digit | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' |'a' | 'b' | 'c' | 'd' | 'e' | 'f') ...
+OctalNumber -> ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7') ...
+Integer -> digit ... | RadixNumber
+SignedInteger -> ['+'|'-] Integer
+Quote -> ''''''
