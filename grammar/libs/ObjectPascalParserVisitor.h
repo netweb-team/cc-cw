@@ -79,6 +79,12 @@ public:
 
     virtual std::any visitSubrangeType(ObjectPascalParser::SubrangeTypeContext *context) = 0;
 
+    virtual std::any visitSubrangeType2(ObjectPascalParser::SubrangeType2Context *context) = 0;
+
+    virtual std::any visitSubrangeType3(ObjectPascalParser::SubrangeType3Context *context) = 0;
+
+    virtual std::any visitSubrangeType4(ObjectPascalParser::SubrangeType4Context *context) = 0;
+
     virtual std::any visitEnumeratedType(ObjectPascalParser::EnumeratedTypeContext *context) = 0;
 
     virtual std::any visitEnumeratedTypeElement(ObjectPascalParser::EnumeratedTypeElementContext *context) = 0;

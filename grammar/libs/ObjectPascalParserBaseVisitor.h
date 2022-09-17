@@ -135,6 +135,18 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitSubrangeType2(ObjectPascalParser::SubrangeType2Context *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSubrangeType3(ObjectPascalParser::SubrangeType3Context *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSubrangeType4(ObjectPascalParser::SubrangeType4Context *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitEnumeratedType(ObjectPascalParser::EnumeratedTypeContext *ctx) override {
     return visitChildren(ctx);
   }

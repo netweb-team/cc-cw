@@ -47,7 +47,7 @@ constantDecl: (Identifier ASSIGN constExpr portabilityDirective? ) | ( Identifie
 
 typeSection: TYPE_ (typeDecl SEMI)+;  
 
-typeDecl: ( Identifier ASSIGN TYPE_? type portabilityDirective?) | ( Identifier ASSIGN TYPE_? restrictedType portabilityDirective?);
+typeDecl: Identifier ASSIGN TYPE_? (type | restrictedType) portabilityDirective?;
 
 typedConstant: (constExpr | arrayConstant | recordConstant);
 
@@ -66,7 +66,10 @@ simpleType: (ordinalType | realType);
 
 ordinalType: (subrangeType | enumeratedType | ordIdent);
 
-subrangeType: (constExpr | Identifier) DOT_DOT (constExpr | Identifier);
+subrangeType: (constExpr DOT_DOT constExpr) | subrangeType2;
+subrangeType2: (Identifier DOT_DOT Identifier) | subrangeType3;
+subrangeType3: (Identifier DOT_DOT constExpr) | subrangeType4;
+subrangeType4: (constExpr DOT_DOT Identifier);
 
 enumeratedType: LEFT_PAREN enumeratedTypeElement (COMMA enumeratedTypeElement)* RIGHT_PAREN;
 enumeratedTypeElement: Identifier ( ASSIGN constExpr )?;
@@ -209,7 +212,7 @@ requiresClause: REQUIRES identList+ SEMI;
 containsClause: CONTAINS identList+ SEMI;
 identList: Identifier (COMMA Identifier)*;
 qualIdList: qualId (COMMA qualId)+;
-qualId: unitId (DOT Identifier CARET+)?; 
+qualId: (unitId DOT)? ((DOT)? Identifier (CARET)?)+;
 typeId: (unitId DOT)? Identifier;
 
 // Ident* -> <Case-Sensitive> Ident;

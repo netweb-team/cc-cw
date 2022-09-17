@@ -172,7 +172,7 @@ fragment BINARYDIGIT: [01];
 
 fragment IDENT: NONDIGIT (NONDIGIT | DIGIT)*;
 
-Identifier: IDENT (DOT IDENT)*;
+Identifier: IDENT;
 
 Integer: IntegerLiteral | OctLiteral | HexLiteral;
 
